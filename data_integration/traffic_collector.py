@@ -320,10 +320,10 @@ class TrafficCollector:
         
         stats = {
             'total_segments': len(traffic_data),
-            'average_speed_kmh': traffic_data['current_speed_kmh'].mean(),
+            'average_speed_kmh': float(traffic_data['current_speed_kmh'].mean()),
             'average_congestion_level': traffic_data['congestion_level'].mode().iloc[0] if not traffic_data['congestion_level'].mode().empty else 'unknown',
-            'congestion_distribution': traffic_data['congestion_level'].value_counts().to_dict(),
-            'average_energy_impact': traffic_data['energy_impact_factor'].mean(),
+            'congestion_distribution': {k: int(v) for k, v in traffic_data['congestion_level'].value_counts().to_dict().items()},
+            'average_energy_impact': float(traffic_data['energy_impact_factor'].mean()),
             'timestamp': datetime.now()
         }
         

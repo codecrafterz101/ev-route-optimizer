@@ -5,3 +5,9 @@ data_exports/*
 data_integration/__pycache__/*
 demo_exports/*
 .env
+models/*
+results/*
+venv/*
+.DS_Store
+app.py.backup
+.vscode/launch.json

@@ -98,10 +98,11 @@ class Config:
     
     # System Performance
     PERFORMANCE = {
-        'cache_ttl': 300,  # 5 minutes cache TTL
         'max_route_length_km': 100,  # Maximum route length to process
         'max_processing_time': 30,  # Maximum processing time in seconds
         'batch_size': 1000,  # Batch size for data processing
+        'use_synthetic_data': True,  # Skip OSM downloads, use synthetic data for speed
+        'osm_timeout_seconds': 10,  # Timeout for OSM queries
     }
     
     # API Rate Limits

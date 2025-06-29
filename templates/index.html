@@ -1,0 +1,1029 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EV Route Optimizer - Smart Energy-Efficient Navigation</title>
+
+    <!-- CSS Dependencies -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+    <style>
+        :root {
+            --primary-color: #2563eb;
+            --secondary-color: #10b981;
+            --accent-color: #f59e0b;
+            --danger-color: #ef4444;
+            --dark-color: #1f2937;
+            --light-color: #f8fafc;
+            --border-color: #e5e7eb;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            color: var(--dark-color);
+        }
+
+        .navbar {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+        }
+
+        .navbar-brand {
+            font-weight: 700;
+            color: var(--primary-color) !important;
+            font-size: 1.5rem;
+        }
+
+        .main-container {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+            margin: 2rem auto;
+            padding: 2rem;
+            max-width: 1400px;
+        }
+
+        .dashboard-header {
+            text-align: center;
+            margin-bottom: 3rem;
+        }
+
+        .dashboard-header h1 {
+            color: var(--dark-color);
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+        }
+
+        .dashboard-header p {
+            color: #6b7280;
+            font-size: 1.1rem;
+        }
+
+        .status-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.5rem 1rem;
+            border-radius: 50px;
+            font-weight: 500;
+            margin: 0.5rem;
+        }
+
+        .status-online {
+            background: rgba(16, 185, 129, 0.1);
+            color: var(--secondary-color);
+            border: 1px solid rgba(16, 185, 129, 0.2);
+        }
+
+        .status-offline {
+            background: rgba(239, 68, 68, 0.1);
+            color: var(--danger-color);
+            border: 1px solid rgba(239, 68, 68, 0.2);
+        }
+
+        .status-loading {
+            background: rgba(245, 158, 11, 0.1);
+            color: var(--accent-color);
+            border: 1px solid rgba(245, 158, 11, 0.2);
+        }
+
+        .feature-card {
+            background: white;
+            border-radius: 15px;
+            padding: 2rem;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease;
+            height: 100%;
+            border: 1px solid var(--border-color);
+        }
+
+        .feature-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
+        }
+
+        .feature-icon {
+            width: 60px;
+            height: 60px;
+            border-radius: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .icon-primary {
+            background: rgba(37, 99, 235, 0.1);
+            color: var(--primary-color);
+        }
+
+        .icon-secondary {
+            background: rgba(16, 185, 129, 0.1);
+            color: var(--secondary-color);
+        }
+
+        .icon-accent {
+            background: rgba(245, 158, 11, 0.1);
+            color: var(--accent-color);
+        }
+
+        .icon-danger {
+            background: rgba(239, 68, 68, 0.1);
+            color: var(--danger-color);
+        }
+
+        .btn-primary {
+            background: var(--primary-color);
+            border: none;
+            border-radius: 10px;
+            padding: 0.75rem 1.5rem;
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+
+        .btn-primary:hover {
+            background: #1d4ed8;
+            transform: translateY(-2px);
+        }
+
+        .btn-success {
+            background: var(--secondary-color);
+            border: none;
+            border-radius: 10px;
+            padding: 0.75rem 1.5rem;
+            font-weight: 500;
+        }
+
+        .form-control,
+        .form-select {
+            border-radius: 10px;
+            border: 2px solid var(--border-color);
+            padding: 0.75rem 1rem;
+            transition: all 0.3s ease;
+        }
+
+        .form-control:focus,
+        .form-select:focus {
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 0.2rem rgba(37, 99, 235, 0.25);
+        }
+
+        .map-container {
+            height: 400px;
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+        }
+
+        .results-container {
+            background: #f8fafc;
+            border-radius: 15px;
+            padding: 1.5rem;
+            margin-top: 1rem;
+            border: 1px solid var(--border-color);
+        }
+
+        .metric-card {
+            background: white;
+            border-radius: 10px;
+            padding: 1.5rem;
+            text-align: center;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
+            border: 1px solid var(--border-color);
+        }
+
+        .metric-value {
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--primary-color);
+            margin-bottom: 0.5rem;
+        }
+
+        .metric-label {
+            color: #6b7280;
+            font-size: 0.9rem;
+            font-weight: 500;
+        }
+
+        .loading-spinner {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid #f3f3f3;
+            border-top: 3px solid var(--primary-color);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% {
+                transform: rotate(0deg);
+            }
+
+            100% {
+                transform: rotate(360deg);
+            }
+        }
+
+        .alert {
+            border-radius: 10px;
+            border: none;
+            padding: 1rem 1.5rem;
+        }
+
+        .progress {
+            height: 8px;
+            border-radius: 10px;
+            background: var(--border-color);
+        }
+
+        .progress-bar {
+            border-radius: 10px;
+        }
+
+        @media (max-width: 768px) {
+            .main-container {
+                margin: 1rem;
+                padding: 1rem;
+            }
+
+            .feature-card {
+                margin-bottom: 1rem;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Navigation -->
+    <nav class="navbar navbar-expand-lg navbar-light sticky-top">
+        <div class="container">
+            <a class="navbar-brand" href="#">
+                <i class="fas fa-bolt me-2"></i>
+                EV Route Optimizer
+            </a>
+            <div class="navbar-nav ms-auto">
+                <div id="system-status" class="status-badge status-loading">
+                    <div class="loading-spinner"></div>
+                    <span>Connecting...</span>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Container -->
+    <div class="container">
+        <div class="main-container">
+            <!-- Dashboard Header -->
+            <div class="dashboard-header">
+                <h1><i class="fas fa-route me-3"></i>Smart EV Route Optimization</h1>
+                <p>AI-powered energy-efficient navigation for electric vehicles</p>
+            </div>
+
+            <!-- System Initialization -->
+            <div class="row mb-4">
+                <div class="col-12">
+                    <div class="feature-card text-center">
+                        <div class="feature-icon icon-primary mx-auto">
+                            <i class="fas fa-rocket"></i>
+                        </div>
+                        <h4>System Initialization</h4>
+                        <p class="text-muted mb-3">Initialize the ML pipeline and load energy prediction models</p>
+                        <button id="init-system" class="btn btn-primary">
+                            <i class="fas fa-play me-2"></i>Initialize System
+                        </button>
+                        <div id="init-progress" class="mt-3" style="display: none;">
+                            <div class="progress">
+                                <div class="progress-bar progress-bar-striped progress-bar-animated" role="progressbar"
+                                    style="width: 0%"></div>
+                            </div>
+                            <small class="text-muted mt-2 d-block">Loading ML models...</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Main Features -->
+            <div class="row">
+                <!-- Route Optimization -->
+                <div class="col-lg-6 mb-4">
+                    <div class="feature-card">
+                        <div class="feature-icon icon-primary">
+                            <i class="fas fa-route"></i>
+                        </div>
+                        <h4>Route Optimization</h4>
+                        <p class="text-muted mb-4">Find the most energy-efficient route between two points</p>
+
+                        <form id="route-form">
+                            <div class="mb-3">
+                                <label for="origin" class="form-label">Origin</label>
+                                <input type="text" class="form-control" id="origin"
+                                    placeholder="Enter starting location" required>
+                            </div>
+                            <div class="mb-3">
+                                <label for="destination" class="form-label">Destination</label>
+                                <input type="text" class="form-control" id="destination" placeholder="Enter destination"
+                                    required>
+                            </div>
+                            <div class="row mb-3">
+                                <div class="col-md-6">
+                                    <label for="vehicle-type" class="form-label">Vehicle Type</label>
+                                    <select class="form-select" id="vehicle-type">
+                                        <option value="compact">Compact EV</option>
+                                        <option value="sedan">Sedan EV</option>
+                                        <option value="suv">SUV EV</option>
+                                        <option value="truck">Truck EV</option>
+                                    </select>
+                                </div>
+                                <div class="col-md-6">
+                                    <label for="battery-level" class="form-label">Battery Level (%)</label>
+                                    <input type="number" class="form-control" id="battery-level" value="80" min="10"
+                                        max="100">
+                                </div>
+                            </div>
+                            <button type="submit" class="btn btn-primary w-100">
+                                <i class="fas fa-search me-2"></i>Optimize Route
+                            </button>
+                        </form>
+
+                        <div id="route-results" class="results-container" style="display: none;">
+                            <h6><i class="fas fa-check-circle text-success me-2"></i>Route Optimized</h6>
+                            <div class="row mt-3">
+                                <div class="col-6">
+                                    <div class="metric-card">
+                                        <div class="metric-value" id="route-distance">-</div>
+                                        <div class="metric-label">Distance (km)</div>
+                                    </div>
+                                </div>
+                                <div class="col-6">
+                                    <div class="metric-card">
+                                        <div class="metric-value" id="route-energy">-</div>
+                                        <div class="metric-label">Energy (kWh)</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Energy Prediction -->
+                <!-- <div class="col-lg-6 mb-4">
+                    <div class="feature-card">
+                        <div class="feature-icon icon-secondary">
+                            <i class="fas fa-battery-three-quarters"></i>
+                        </div>
+                        <h4>Energy Prediction</h4>
+                        <p class="text-muted mb-4">Predict energy consumption based on driving conditions</p>
+                        
+                        <form id="energy-form">
+                            <div class="row mb-3">
+                                <div class="col-md-6">
+                                    <label for="speed-limit" class="form-label">Speed Limit (km/h)</label>
+                                    <input type="number" class="form-control" id="speed-limit" 
+                                           value="50" min="30" max="130">
+                                </div>
+                                <div class="col-md-6">
+                                    <label for="temperature" class="form-label">Temperature (°C)</label>
+                                    <input type="number" class="form-control" id="temperature" 
+                                           value="20" min="-20" max="40">
+                                </div>
+                            </div>
+                            <div class="row mb-3">
+                                <div class="col-md-6">
+                                    <label for="traffic-density" class="form-label">Traffic Density</label>
+                                    <select class="form-select" id="traffic-density">
+                                        <option value="0.1">Light</option>
+                                        <option value="0.3" selected>Medium</option>
+                                        <option value="0.6">Heavy</option>
+                                        <option value="0.9">Very Heavy</option>
+                                    </select>
+                                </div>
+                                <div class="col-md-6">
+                                    <label for="elevation" class="form-label">Elevation Gradient</label>
+                                    <select class="form-select" id="elevation">
+                                        <option value="-0.05">Downhill</option>
+                                        <option value="0" selected>Flat</option>
+                                        <option value="0.03">Moderate Uphill</option>
+                                        <option value="0.06">Steep Uphill</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <button type="submit" class="btn btn-success w-100">
+                                <i class="fas fa-calculator me-2"></i>Predict Energy
+                            </button>
+                        </form>
+                        
+                        <div id="energy-results" class="results-container" style="display: none;">
+                            <h6><i class="fas fa-chart-line text-success me-2"></i>Energy Prediction</h6>
+                            <div class="row mt-3">
+                                <div class="col-12">
+                                    <div class="metric-card">
+                                        <div class="metric-value" id="predicted-energy">-</div>
+                                        <div class="metric-label">Wh/km</div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="mt-3">
+                                <small class="text-muted">
+                                    Model: <span id="model-used">-</span> | 
+                                    Confidence: <span id="prediction-confidence">-</span>
+                                </small>
+                            </div>
+                        </div>
+                    </div>
+                </div> -->
+                
+                <!-- Map View -->
+                <div class="col-lg-6 mb-4">
+                    <div class="feature-card">
+                        <div class="d-flex align-items-center mb-3">
+                            <div class="feature-icon icon-accent me-3">
+                                <i class="fas fa-map"></i>
+                            </div>
+                            <div>
+                                <h4 class="mb-0">Interactive Map</h4>
+                                <p class="text-muted mb-0">Real-time road network and charging stations</p>
+                            </div>
+                        </div>
+                        <div id="map" class="map-container"></div>
+                        <div class="mt-3">
+                            <button id="load-map-data" class="btn btn-outline-primary">
+                                <i class="fas fa-sync me-2"></i>Load Map Data
+                            </button>
+                            <button id="show-charging-stations" class="btn btn-outline-success ms-2">
+                                <i class="fas fa-charging-station me-2"></i>Show Charging Stations
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Data Visualization -->
+            <div class="row">
+
+
+                <!-- System Metrics -->
+                <div class="col-lg-12 mb-4">
+                    <div class="feature-card">
+                        <div class="feature-icon icon-danger">
+                            <i class="fas fa-tachometer-alt"></i>
+                        </div>
+                        <h4>System Metrics</h4>
+                        <p class="text-muted mb-4">Real-time system performance</p>
+
+                        <div id="system-metrics">
+                            <div class="metric-card mb-3">
+                                <div class="metric-value" id="ml-models-count">-</div>
+                                <div class="metric-label">ML Models Loaded</div>
+                            </div>
+                            <div class="metric-card mb-3">
+                                <div class="metric-value" id="data-sources-count">-</div>
+                                <div class="metric-label">Data Sources Active</div>
+                            </div>
+                            <div class="metric-card mb-3">
+                                <div class="metric-value" id="last-update">-</div>
+                                <div class="metric-label">Last Update</div>
+                            </div>
+                        </div>
+
+                        <button id="refresh-metrics" class="btn btn-outline-primary w-100">
+                            <i class="fas fa-refresh me-2"></i>Refresh Metrics
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Footer -->
+            <div class="text-center mt-4 pt-4" style="border-top: 1px solid var(--border-color);">
+                <p class="text-muted mb-0">
+                    <i class="fas fa-leaf me-2 text-success"></i>
+                    EV Route Optimizer - Sustainable Transportation Technology
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <!-- JavaScript Dependencies -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
+    <!-- Custom JavaScript -->
+    <script>
+        // Global variables
+        let map;
+        let systemInitialized = false;
+
+        // Initialize the application
+        document.addEventListener('DOMContentLoaded', function () {
+            initializeMap();
+            checkSystemStatus();
+            setupEventListeners();
+
+            // Auto-refresh status every 30 seconds
+            // setInterval(checkSystemStatus, 30000);
+        });
+
+        // Initialize Leaflet map
+        function initializeMap() {
+            map = L.map('map').setView([52.5200, 13.4050], 11); // Berlin coordinates
+
+            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                attribution: '© OpenStreetMap contributors'
+            }).addTo(map);
+
+            // Add a test marker to verify map is working
+            const testMarker = L.marker([52.5200, 13.4050])
+                .addTo(map)
+                .bindPopup('Test marker - Map is working!');
+
+            console.log('🗺️ Map initialized successfully');
+        }
+
+        // Check system status
+        async function checkSystemStatus() {
+            try {
+                const response = await fetch('/api/status');
+                const data = await response.json();
+
+                updateSystemStatus(data);
+                updateSystemMetrics(data);
+            } catch (error) {
+                console.error('Failed to check system status:', error);
+                updateSystemStatus({ status: 'error', error: error.message });
+            }
+        }
+
+        // Update system status indicator
+        function updateSystemStatus(data) {
+            const statusElement = document.getElementById('system-status');
+
+            if (data.status === 'online') {
+                statusElement.className = 'status-badge status-online';
+                statusElement.innerHTML = '<i class="fas fa-check-circle"></i><span>Online</span>';
+                systemInitialized = data.system_state?.initialized || false;
+            } else if (data.status === 'error') {
+                statusElement.className = 'status-badge status-offline';
+                statusElement.innerHTML = '<i class="fas fa-exclamation-circle"></i><span>Error</span>';
+            } else {
+                statusElement.className = 'status-badge status-loading';
+                statusElement.innerHTML = '<div class="loading-spinner"></div><span>Loading</span>';
+            }
+        }
+
+        // Update system metrics
+        function updateSystemMetrics(data) {
+            document.getElementById('ml-models-count').textContent =
+                data.ml_status === 'ready' ? '2' : '0';
+            document.getElementById('data-sources-count').textContent =
+                Object.keys(data.data_sources || {}).length;
+            document.getElementById('last-update').textContent =
+                data.system_state?.last_update ?
+                    new Date(data.system_state.last_update).toLocaleTimeString() : 'Never';
+        }
+
+        // Setup event listeners
+        function setupEventListeners() {
+            // System initialization
+            document.getElementById('init-system').addEventListener('click', initializeSystem);
+
+            // Route optimization form
+            document.getElementById('route-form').addEventListener('submit', optimizeRoute);
+
+            // Energy prediction form
+            document.getElementById('energy-form').addEventListener('submit', predictEnergy);
+
+            // Map controls
+            document.getElementById('load-map-data').addEventListener('click', loadMapData);
+            document.getElementById('show-charging-stations').addEventListener('click', showChargingStations);
+
+            // Refresh metrics
+            document.getElementById('refresh-metrics').addEventListener('click', checkSystemStatus);
+        }
+
+        // Initialize system
+        async function initializeSystem() {
+            const button = document.getElementById('init-system');
+            const progress = document.getElementById('init-progress');
+
+            button.disabled = true;
+            button.innerHTML = '<div class="loading-spinner me-2"></div>Initializing...';
+            progress.style.display = 'block';
+
+            try {
+                const response = await fetch('/api/initialize', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' }
+                });
+
+                const data = await response.json();
+
+                if (data.status === 'success') {
+                    button.innerHTML = '<i class="fas fa-check me-2"></i>System Ready';
+                    button.className = 'btn btn-success';
+                    systemInitialized = true;
+
+                    // Show success message
+                    showAlert('success', `System initialized successfully! Best model: ${data.results.best_model} (R² = ${data.results.best_score.toFixed(3)})`);
+                } else {
+                    throw new Error(data.error || 'Initialization failed');
+                }
+            } catch (error) {
+                button.innerHTML = '<i class="fas fa-exclamation me-2"></i>Initialization Failed';
+                button.className = 'btn btn-danger';
+                showAlert('danger', `Initialization failed: ${error.message}`);
+            } finally {
+                progress.style.display = 'none';
+                setTimeout(() => { button.disabled = false; }, 2000);
+            }
+        }
+
+        // Optimize route
+        async function optimizeRoute(event) {
+            event.preventDefault();
+
+            console.log('🚗 Starting route optimization...');
+
+            if (!systemInitialized) {
+                showAlert('warning', 'Please initialize the system first');
+                return;
+            }
+
+            const data = {
+                origin: document.getElementById('origin').value,
+                destination: document.getElementById('destination').value,
+                vehicle_params: {
+                    type: document.getElementById('vehicle-type').value,
+                    battery_level: parseFloat(document.getElementById('battery-level').value)
+                }
+            };
+
+            console.log('📋 Route optimization data:', data);
+
+            const submitButton = event.target.querySelector('button[type="submit"]');
+            submitButton.disabled = true;
+            submitButton.innerHTML = '<div class="loading-spinner me-2"></div>Optimizing...';
+
+            try {
+                const response = await fetch('/api/route/optimize', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(data)
+                });
+
+                const result = await response.json();
+                console.log('📡 Route optimization response:', result);
+
+                if (result.status === 'success') {
+                    displayRouteResults(result.route);
+                    showAlert('success', 'Route optimized successfully!');
+                } else {
+                    throw new Error(result.error || 'Route optimization failed');
+                }
+            } catch (error) {
+                console.error('❌ Route optimization error:', error);
+                showAlert('danger', `Route optimization failed: ${error.message}`);
+            } finally {
+                submitButton.disabled = false;
+                submitButton.innerHTML = '<i class="fas fa-search me-2"></i>Optimize Route';
+            }
+        }
+
+        // Display route results with enhanced map visualization
+        function displayRouteResults(route) {
+            document.getElementById('route-distance').textContent = route.total_distance_km;
+            document.getElementById('route-energy').textContent = route.total_energy_kwh;
+            document.getElementById('route-results').style.display = 'block';
+            // Enhanced: show route on map
+            displayRouteOnMap(route);
+        }
+
+        // Display route on map with bright colors, markers, and auto-zoom
+        function displayRouteOnMap(route) {
+            // Clear existing route elements
+            if (window.routeLayer) map.removeLayer(window.routeLayer);
+            if (window.originMarker) map.removeLayer(window.originMarker);
+            if (window.destinationMarker) map.removeLayer(window.destinationMarker);
+            if (window.routeSegmentLayers) window.routeSegmentLayers.forEach(layer => map.removeLayer(layer));
+            window.routeSegmentLayers = [];
+            const allRouteCoordinates = [];
+            route.route_segments.forEach((segment, index) => {
+                const segmentCoords = segment.coordinates.map(coord => [coord[0], coord[1]]);
+                allRouteCoordinates.push(...segmentCoords);
+                const segmentLayer = L.polyline(segmentCoords, {
+                    color: getRouteEnergyColor(segment.energy_wh_per_km),
+                    weight: 6,
+                    opacity: 0.9,
+                    dashArray: index % 2 === 0 ? '10, 5' : '5, 10'
+                }).addTo(map);
+                // Enhanced popup with detailed segment information
+                const segmentEnergyKwh = (segment.segment_energy_wh || 0) / 1000;
+                const energyEfficiency = segment.energy_wh_per_km < 150 ? '🟢 Excellent' :
+                    segment.energy_wh_per_km < 200 ? '🟡 Good' :
+                        segment.energy_wh_per_km < 250 ? '🟠 Moderate' : '🔴 High';
+                segmentLayer.bindPopup(`
+                    <div style="min-width: 280px; font-family: Arial, sans-serif;">
+                        <div style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 10px; margin: -10px -10px 10px -10px; border-radius: 5px 5px 0 0;">
+                            <strong>🚗 Route Segment ${index + 1}</strong>
+                        </div>
+                        <div style="margin-bottom: 8px;">
+                            <strong>🛣️ Distance:</strong> ${segment.distance_km} km<br>
+                            <strong>⏱️ Time:</strong> ${segment.estimated_time_minutes} minutes<br>
+                            <strong>🚦 Speed Limit:</strong> ${segment.speed_limit} km/h
+                        </div>
+                        <hr style="margin: 8px 0;">
+                        <div style="margin-bottom: 8px;">
+                            <strong>⚡ Energy Details:</strong><br>
+                            • Rate: <strong>${segment.energy_wh_per_km} Wh/km</strong><br>
+                            • Total: <strong>${segmentEnergyKwh.toFixed(3)} kWh</strong><br>
+                            • Efficiency: <strong>${energyEfficiency}</strong>
+                        </div>
+                        <hr style="margin: 8px 0;">
+                        <div style="margin-bottom: 8px;">
+                            <strong>🛣️ Road Info:</strong><br>
+                            • Type: <strong>${segment.road_type}</strong><br>
+                            • Traffic: <strong>${(segment.traffic_density * 100).toFixed(0)}%</strong><br>
+                            • Weather: <strong>${segment.weather_condition}</strong>
+                        </div>
+                    </div>
+                `);
+                window.routeSegmentLayers.push(segmentLayer);
+            });
+            // Enhanced origin marker with detailed information
+            const originCoords = route.route_segments[0].coordinates[0];
+            window.originMarker = L.marker([originCoords[0], originCoords[1]], {
+                icon: L.divIcon({
+                    className: 'custom-div-icon',
+                    html: '<div style="background-color: #4CAF50; width: 25px; height: 25px; border-radius: 50%; border: 4px solid white; box-shadow: 0 3px 8px rgba(0,0,0,0.4); display: flex; align-items: center; justify-content: center; color: white; font-weight: bold; font-size: 12px;">🚗</div>',
+                    iconSize: [25, 25],
+                    iconAnchor: [12, 12]
+                })
+            }).addTo(map).bindPopup(`
+                <div style="min-width: 280px; font-family: Arial, sans-serif;">
+                    <div style="background: linear-gradient(135deg, #4CAF50 0%, #45a049 100%); color: white; padding: 10px; margin: -10px -10px 10px -10px; border-radius: 5px 5px 0 0;">
+                        <strong>🚗 Starting Point</strong>
+                    </div>
+                    <div style="margin-bottom: 8px;">
+                        <strong>📍 Location:</strong> ${route.origin}<br>
+                        <strong>🕐 Departure:</strong> ${new Date().toLocaleTimeString()}<br>
+                        <strong>🔋 Battery Start:</strong> 100%
+                    </div>
+                    <hr style="margin: 8px 0;">
+                    <div style="margin-bottom: 8px;">
+                        <strong>🧭 Journey Summary:</strong><br>
+                        • Total Distance: <strong>${route.total_distance_km} km</strong><br>
+                        • Total Energy: <strong>${route.total_energy_kwh} kWh</strong><br>
+                        • Est. Duration: <strong>${route.estimated_time_minutes} minutes</strong><br>
+                        • Avg Energy: <strong>${route.avg_energy_per_km} Wh/km</strong>
+                    </div>
+                    <hr style="margin: 8px 0;">
+                    <div style="margin-bottom: 8px;">
+                        <strong>🎯 Destination:</strong> ${route.destination}<br>
+                        <strong>💶 Est. Cost:</strong> €${(route.total_energy_kwh * 0.35).toFixed(2)}<br>
+                        <strong>🌱 CO2 Saved:</strong> ${(route.total_energy_kwh * 0.4).toFixed(2)} kg
+                    </div>
+                </div>
+            `);
+            // Enhanced destination marker with detailed information
+            const lastSegment = route.route_segments[route.route_segments.length - 1];
+            const destCoords = lastSegment.coordinates[lastSegment.coordinates.length - 1];
+            window.destinationMarker = L.marker([destCoords[0], destCoords[1]], {
+                icon: L.divIcon({
+                    className: 'custom-div-icon',
+                    html: '<div style="background-color: #F44336; width: 25px; height: 25px; border-radius: 50%; border: 4px solid white; box-shadow: 0 3px 8px rgba(0,0,0,0.4); display: flex; align-items: center; justify-content: center; color: white; font-weight: bold; font-size: 12px;">🎯</div>',
+                    iconSize: [25, 25],
+                    iconAnchor: [12, 12]
+                })
+            }).addTo(map).bindPopup(`
+                <div style="min-width: 280px; font-family: Arial, sans-serif;">
+                    <div style="background: linear-gradient(135deg, #F44336 0%, #d32f2f 100%); color: white; padding: 10px; margin: -10px -10px 10px -10px; border-radius: 5px 5px 0 0;">
+                        <strong>🎯 Destination</strong>
+                    </div>
+                    <div style="margin-bottom: 8px;">
+                        <strong>📍 Location:</strong> ${route.destination}<br>
+                        <strong>🕐 Arrival:</strong> ${new Date(Date.now() + route.estimated_time_minutes * 60000).toLocaleTimeString()}<br>
+                        <strong>🔋 Battery End:</strong> ${Math.max(0, (100 - (route.total_energy_kwh / 75 * 100))).toFixed(1)}%
+                    </div>
+                    <hr style="margin: 8px 0;">
+                    <div style="margin-bottom: 8px;">
+                        <strong>📈 Performance:</strong><br>
+                        • Energy Efficiency: <strong>${route.avg_energy_per_km < 150 ? '🟢 Excellent' : route.avg_energy_per_km < 200 ? '🟡 Good' : route.avg_energy_per_km < 250 ? '🟠 Moderate' : '🔴 High'}</strong><br>
+                        • Cost per km: <strong>€${((route.total_energy_kwh / route.total_distance_km) * 0.35).toFixed(3)}</strong><br>
+                        • Time per km: <strong>${(route.estimated_time_minutes / route.total_distance_km).toFixed(1)} min/km</strong>
+                    </div>
+                </div>
+            `);
+            // Auto-zoom to fit the entire route with padding
+            const bounds = L.latLngBounds(allRouteCoordinates);
+            map.fitBounds(bounds, { padding: [30, 30], maxZoom: 15 });
+            console.log('🗺️ Enhanced route displayed with detailed popups and auto-zoom');
+        }
+
+        // Predict energy consumption
+        async function predictEnergy(event) {
+            event.preventDefault();
+
+            console.log('⚡ Starting energy prediction...');
+
+            if (!systemInitialized) {
+                showAlert('warning', 'Please initialize the system first');
+                return;
+            }
+
+            const data = {
+                speed_limit_kmh: parseFloat(document.getElementById('speed-limit').value),
+                temperature: parseFloat(document.getElementById('temperature').value),
+                traffic_density: parseFloat(document.getElementById('traffic-density').value),
+                elevation_gradient: parseFloat(document.getElementById('elevation').value)
+            };
+
+            console.log('📋 Energy prediction data:', data);
+
+            const submitButton = event.target.querySelector('button[type="submit"]');
+            submitButton.disabled = true;
+            submitButton.innerHTML = '<div class="loading-spinner me-2"></div>Predicting...';
+
+            try {
+                const response = await fetch('/api/energy/predict', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(data)
+                });
+
+                const result = await response.json();
+                console.log('📡 Energy prediction response:', result);
+
+                if (result.status === 'success') {
+                    displayEnergyResults(result.prediction);
+                    showAlert('success', 'Energy consumption predicted successfully!');
+                } else {
+                    throw new Error(result.error || 'Energy prediction failed');
+                }
+            } catch (error) {
+                console.error('❌ Energy prediction error:', error);
+                showAlert('danger', `Energy prediction failed: ${error.message}`);
+            } finally {
+                submitButton.disabled = false;
+                submitButton.innerHTML = '<i class="fas fa-calculator me-2"></i>Predict Energy';
+            }
+        }
+
+        // Display energy prediction results
+        function displayEnergyResults(prediction) {
+            document.getElementById('predicted-energy').textContent = prediction.energy_consumption_wh_per_km;
+            document.getElementById('model-used').textContent = prediction.model_used;
+            document.getElementById('prediction-confidence').textContent = prediction.confidence;
+            document.getElementById('energy-results').style.display = 'block';
+        }
+
+        // Load map data
+        async function loadMapData() {
+            try {
+                const response = await fetch('/api/data/road-network');
+                const data = await response.json();
+
+                if (data.status === 'success') {
+                    // Clear existing layers
+                    map.eachLayer(layer => {
+                        if (layer !== map._layers[Object.keys(map._layers)[0]]) {
+                            map.removeLayer(layer);
+                        }
+                    });
+
+                    // Add road network to map
+                    L.geoJSON(data.data, {
+                        style: feature => ({
+                            color: getEnergyColor(feature.properties.energy_per_km),
+                            weight: 3,
+                            opacity: 0.8
+                        }),
+                        onEachFeature: (feature, layer) => {
+                            layer.bindPopup(`
+                                <strong>Road Segment</strong><br>
+                                Energy: ${feature.properties.energy_per_km} Wh/km<br>
+                                Speed Limit: ${feature.properties.speed_limit} km/h<br>
+                                Type: ${feature.properties.road_type}
+                            `);
+                        }
+                    }).addTo(map);
+
+                    showAlert('success', `Loaded ${data.summary.total_segments} road segments`);
+                } else {
+                    throw new Error(data.error || 'Failed to load map data');
+                }
+            } catch (error) {
+                showAlert('danger', `Failed to load map data: ${error.message}`);
+            }
+        }
+
+        // Show charging stations with enhanced visualization
+        async function showChargingStations() {
+            try {
+                console.log('🔌 Loading charging stations...');
+                const response = await fetch('/api/data/charging-stations');
+                const data = await response.json();
+                console.log('📡 API Response:', data);
+                if (data.status === 'success') {
+                    console.log(`📍 Found ${data.data.length} charging stations`);
+                    // Clear existing charging station elements
+                    if (window.chargingStationElements) {
+                        window.chargingStationElements.forEach(element => map.removeLayer(element));
+                    }
+                    window.chargingStationElements = [];
+                    data.data.forEach((station, index) => {
+                        console.log(`📍 Adding station ${index + 1}:`, station);
+                        // Create circle marker instead of regular marker
+                        const circleRadius = station.power_kw >= 50 ? 12 : 8;
+                        const circleColor = station.is_available ? '#4CAF50' : '#F44336';
+                        const borderColor = station.charging_type === 'fast' ? '#FFD700' : '#2196F3';
+                        const chargingCircle = L.circleMarker([station.latitude, station.longitude], {
+                            radius: circleRadius,
+                            fillColor: circleColor,
+                            color: borderColor,
+                            weight: 3,
+                            opacity: 0.8,
+                            fillOpacity: 0.7
+                        }).addTo(map);
+                        chargingCircle.bindPopup(`
+                            <div style="min-width: 250px;">
+                                <strong>🔌 ${station.name}</strong><br>
+                                <hr style="margin: 5px 0;">
+                                ⚡ Power: <strong>${station.power_kw} kW</strong><br>
+                                🔋 Type: <strong>${station.charging_type}</strong><br>
+                                💶 Price: <strong>€${station.price_per_kwh.toFixed(2)}/kWh</strong><br>
+                                🔌 Connectors: <strong>${station.connector_types.join(', ')}</strong><br>
+                                📡 Network: <strong>${station.network}</strong><br>
+                                <hr style="margin: 5px 0;">
+                                Status: <span style="color: ${station.is_available ? '#4CAF50' : '#F44336'}; font-weight: bold;">
+                                    ${station.is_available ? '✅ Available' : '❌ Occupied'}
+                                </span>
+                            </div>
+                        `);
+                        window.chargingStationElements.push(chargingCircle);
+                    });
+                    console.log(`✅ Added ${window.chargingStationElements.length} charging stations with enhanced visualization`);
+                    showAlert('success', `Loaded ${data.summary.total_stations} charging stations`);
+                } else {
+                    throw new Error(data.error || 'Failed to load charging stations');
+                }
+            } catch (error) {
+                console.error('❌ Error loading charging stations:', error);
+                showAlert('danger', `Failed to load charging stations: ${error.message}`);
+            }
+        }
+
+        // Get bright colors for route energy consumption
+        function getRouteEnergyColor(energy) {
+            if (energy < 150) return '#00FF00';
+            if (energy < 180) return '#90EE90';
+            if (energy < 200) return '#FFFF00';
+            if (energy < 220) return '#FFA500';
+            if (energy < 250) return '#FF6347';
+            return '#FF0000';
+        }
+        // Get enhanced colors for road network
+        function getEnergyColor(energy) {
+            if (energy < 150) return '#00FF00';
+            if (energy < 200) return '#FFFF00';
+            return '#FF0000';
+        }
+
+        // Show alert messages
+        function showAlert(type, message) {
+            const alertDiv = document.createElement('div');
+            alertDiv.className = `alert alert-${type} alert-dismissible fade show`;
+            alertDiv.innerHTML = `
+                ${message}
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            `;
+
+            // Insert at the top of main container
+            const container = document.querySelector('.main-container');
+            container.insertBefore(alertDiv, container.firstChild);
+
+            // Auto-dismiss after 5 seconds
+            setTimeout(() => {
+                if (alertDiv.parentNode) {
+                    alertDiv.remove();
+                }
+            }, 5000);
+        }
+    </script>
+</body>
+
+</html>

@@ -11,6 +11,7 @@ import os
 import pickle
 from datetime import datetime, timedelta
 from config import Config
+import numpy as np
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
@@ -23,7 +24,7 @@ class OpenStreetMapCollector:
         self.berlin_bounds = config.BERLIN_BOUNDS
         self.cache_dir = "data_exports"
         self.cache_file = os.path.join(self.cache_dir, "berlin_road_network_cache.pkl")
-        self.cache_ttl_hours = 24  # Cache for 24 hours
+        self.cache_ttl_hours = 720  # Cache for 30 days (720 hours) - download once and keep forever
         
         # Configure OSMnx for smaller areas (newer API)
         ox.settings.use_cache = True
@@ -289,7 +290,20 @@ class OpenStreetMapCollector:
     def _estimate_traffic_capacity(self, row) -> str:
         """Estimate traffic capacity based on road attributes"""
         road_type = row.get('road_type', 'local')
-        lanes = row.get('lanes', 1)
+        lanes_raw = row.get('lanes', 1)
+        
+        # Convert lanes to integer with error handling
+        try:
+            if pd.isna(lanes_raw):
+                lanes = 1
+            elif isinstance(lanes_raw, str):
+                # Handle string values like "2", "3;4", "2 lanes", etc.
+                lanes_str = lanes_raw.split(';')[0].split()[0]  # Take first number
+                lanes = int(float(lanes_str))  # Convert via float to handle "2.0"
+            else:
+                lanes = int(lanes_raw)
+        except (ValueError, TypeError):
+            lanes = 1  # Default fallback
         
         if road_type == 'highway':
             return 'high'
@@ -312,18 +326,63 @@ class OpenStreetMapCollector:
         logger.info("🔄 Cache miss or force refresh - downloading from OpenStreetMap...")
         
         try:
-            # Query for charging stations in Berlin
-            tags = {'amenity': 'charging_station'}
+            # FAST APPROACH: Use multiple points instead of large bounding box
+            # This is much faster than bbox queries
+            logger.info("🚀 Using fast point-based queries...")
             
-            charging_stations = ox.geometries_from_bbox(
-                self.berlin_bounds['north'],
-                self.berlin_bounds['south'],
-                self.berlin_bounds['east'],
-                self.berlin_bounds['west'],
-                tags=tags
-            )
+            # Define multiple points across Berlin for better coverage
+            berlin_points = [
+                (52.52, 13.41),   # Central Berlin
+                (52.54, 13.38),   # North Berlin
+                (52.50, 13.44),   # South Berlin
+                (52.52, 13.35),   # West Berlin
+                (52.52, 13.47),   # East Berlin
+            ]
             
-            if len(charging_stations) == 0:
+            all_stations = []
+            
+            for i, point in enumerate(berlin_points):
+                logger.info(f"📡 Downloading point {i+1}/{len(berlin_points)}: {point}")
+                
+                try:
+                    # Use point-based query (much faster than bbox)
+                    import signal
+                    
+                    def timeout_handler(signum, frame):
+                        raise TimeoutError("OSM query timed out")
+                    
+                    # Set 30 second timeout per point
+                    signal.signal(signal.SIGALRM, timeout_handler)
+                    signal.alarm(30)
+                    
+                    stations = ox.features_from_point(
+                        point,
+                        tags={'amenity': 'charging_station'},
+                        dist=300  # 300m radius per point (balanced speed/coverage)
+                    )
+                    
+                    signal.alarm(0)  # Cancel timeout
+                    
+                    if len(stations) > 0:
+                        all_stations.append(stations)
+                        logger.info(f"✅ Found {len(stations)} stations at point {i+1}")
+                    
+                except (TimeoutError, Exception) as e:
+                    signal.alarm(0)  # Cancel timeout if it was set
+                    logger.warning(f"⚠️ Error at point {i+1}: {e}")
+                    continue
+            
+            # Combine all results
+            if all_stations:
+                import pandas as pd
+                charging_stations = pd.concat(all_stations, ignore_index=True)
+                charging_stations = gpd.GeoDataFrame(charging_stations)
+                
+                # Remove duplicates based on geometry
+                charging_stations = charging_stations.drop_duplicates(subset=['geometry'])
+                
+                logger.info(f"✅ Combined {len(charging_stations)} unique charging stations")
+            else:
                 logger.warning("No charging stations found in OpenStreetMap")
                 return gpd.GeoDataFrame()
             
@@ -388,6 +447,14 @@ class OpenStreetMapCollector:
         
         # Add availability status
         stations_gdf['is_available'] = True  # Default assumption
+        
+        # Add missing fields that data manager expects
+        stations_gdf['station_id'] = [f'osm_station_{i}' for i in range(len(stations_gdf))]
+        stations_gdf['price_per_kwh'] = np.random.uniform(0.25, 0.45, len(stations_gdf))
+        stations_gdf['operator'] = stations_gdf.get('operator', 'Unknown').fillna('Unknown')
+        stations_gdf['connector_types'] = stations_gdf['charging_type'].apply(
+            lambda x: ['Type 2', 'CCS'] if x == 'fast' else ['Type 2']
+        )
         
         return stations_gdf
     
