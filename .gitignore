@@ -5,3 +5,5 @@ data_exports/*
 data_integration/__pycache__/*
 demo_exports/*
 .env
+models/*
+results/*

@@ -289,8 +289,8 @@ class DataManager:
             summary['data_sources']['charging_stations'] = {
                 'status': 'available',
                 'total_count': len(charging_stations),
-                'available_count': charging_stations['is_available'].sum(),
-                'fast_charging_count': len(charging_stations[charging_stations['charging_type'] == 'fast'])
+                'available_count': int(charging_stations['is_available'].sum()),
+                'fast_charging_count': int(len(charging_stations[charging_stations['charging_type'] == 'fast']))
             }
         except Exception as e:
             summary['data_sources']['charging_stations'] = {'status': 'error', 'error': str(e)}

@@ -1,0 +1,225 @@
+python demo_ml_pipeline.py
+2025-06-21 18:31:01.272246: I tensorflow/core/platform/cpu_feature_guard.cc:210] This TensorFlow binary is optimized to use available CPU instructions in performance-critical operations.
+To enable the following instructions: AVX2 AVX512F AVX512_VNNI FMA, in other operations, rebuild TensorFlow with the appropriate compiler flags.
+🚗 EV Energy Consumption ML Pipeline Demonstration
+============================================================
+
+🔄 Running ML Pipeline with Synthetic Data
+----------------------------------------
+INFO:ml_pipeline:🚀 Starting Complete EV ML Pipeline
+INFO:ml_pipeline:============================================================
+INFO:ml_pipeline:📊 Step 1: Data Preparation
+INFO:ml_pipeline:🔄 Preparing training data...
+INFO:ml_pipeline:🔄 Using synthetic training data...
+INFO:data_integration.ml_data_preprocessor:🔄 Creating synthetic training data...
+INFO:data_integration.ml_data_preprocessor:🔧 Engineering features...
+INFO:data_integration.ml_data_preprocessor:🔧 Handling missing values...
+INFO:ml_pipeline:✅ Training data prepared: 2000 samples, 49 features
+INFO:ml_pipeline:🔧 Step 2: Data Preprocessing
+INFO:ml_pipeline:🔧 Preprocessing data...
+INFO:data_integration.ml_data_preprocessor:📏 Scaling features...
+INFO:data_integration.ml_data_preprocessor:✂️ Splitting data into train/test sets...
+INFO:data_integration.ml_data_preprocessor:   Training set: 1600 samples
+INFO:data_integration.ml_data_preprocessor:   Test set: 400 samples
+INFO:data_integration.ml_data_preprocessor:💾 Preprocessor saved to models/data_preprocessor.joblib
+INFO:ml_pipeline:✅ Data preprocessing completed:
+INFO:ml_pipeline:   Training set: (1600, 49)
+INFO:ml_pipeline:   Test set: (400, 49)
+INFO:ml_pipeline:🏋️ Step 3: Model Training
+INFO:ml_pipeline:🏋️ Training ML models...
+INFO:models.ml_model_trainer:🚀 Starting comprehensive model training...
+INFO:models.ml_model_trainer:🌲 Training Random Forest model...
+INFO:models.ml_model_trainer:🌲 Training Random Forest model...
+INFO:models.ml_model_trainer:⚡ Fast mode: Using default Random Forest parameters
+INFO:models.ml_model_trainer:✅ Random Forest training completed. Test R²: 0.7883
+INFO:models.ml_model_trainer:🧠 Training Deep Neural Network model...
+INFO:models.ml_model_trainer:🧠 Training Deep Neural Network model...
+INFO:data_integration.ml_data_preprocessor:📏 Scaling features...
+INFO:data_integration.ml_data_preprocessor:📏 Scaling features...
+INFO:models.ml_model_trainer:🏋️ Training neural network...
+Epoch 1/100
+50/50 ━━━━━━━━━━━━━━━━━━━━ 3s 11ms/step - loss: 24133.7559 - mae: 127.0574 - val_loss: 16560.2031 - val_mae: 104.8605 - learning_rate: 0.0010
+Epoch 2/100
+50/50 ━━━━━━━━━━━━━━━━━━━━ 0s 6ms/step - loss: 17850.5977 - mae: 108.4828 - val_loss: 15762.5488 - val_mae: 103.3387 - learning_rate: 0.0010
+Epoch 3/100
+50/50 ━━━━━━━━━━━━━━━━━━━━ 0s 5ms/step - loss: 15256.3955 - mae: 99.4872 - val_loss: 15348.3350 - val_mae: 102.5856 - learning_rate: 0.0010
+Epoch 4/100
+50/50 ━━━━━━━━━━━━━━━━━━━━ 0s 5ms/step - loss: 13133.2715 - mae: 91.9814 - val_loss: 14255.4473 - val_mae: 97.9218 - learning_rate: 0.0010
+Epoch 5/100
+50/50 ━━━━━━━━━━━━━━━━━━━━ 0s 4ms/step - loss: 13109.3721 - mae: 91.7609 - val_loss: 14532.0762 - val_mae: 99.3546 - learning_rate: 0.0010
+Epoch 6/100
+50/50 ━━━━━━━━━━━━━━━━━━━━ 0s 5ms/step - loss: 13191.6689 - mae: 91.4244 - val_loss: 12791.9951 - val_mae: 92.0548 - learning_rate: 0.0010
+Epoch 7/100
+50/50 ━━━━━━━━━━━━━━━━━━━━ 0s 4ms/step - loss: 11539.6699 - mae: 85.8424 - val_loss: 13301.4141 - val_mae: 94.6447 - learning_rate: 0.0010
+Epoch 8/100
+50/50 ━━━━━━━━━━━━━━━━━━━━ 0s 5ms/step - loss: 9933.5234 - mae: 79.4137 - val_loss: 12055.1025 - val_mae: 89.7225 - learning_rate: 0.0010
+Epoch 9/100
+50/50 ━━━━━━━━━━━━━━━━━━━━ 0s 5ms/step - loss: 10267.8867 - mae: 80.0247 - val_loss: 10185.9111 - val_mae: 80.8841 - learning_rate: 0.0010
+Epoch 10/100
+50/50 ━━━━━━━━━━━━━━━━━━━━ 0s 5ms/step - loss: 10279.3652 - mae: 80.2538 - val_loss: 10377.7197 - val_mae: 82.0783 - learning_rate: 0.0010
+Epoch 11/100
+50/50 ━━━━━━━━━━━━━━━━━━━━ 0s 5ms/step - loss: 9691.2588 - mae: 78.1528 - val_loss: 10818.1641 - val_mae: 84.9275 - learning_rate: 0.0010
+Epoch 12/100
+50/50 ━━━━━━━━━━━━━━━━━━━━ 0s 4ms/step - loss: 9104.1152 - mae: 76.6782 - val_loss: 9502.8418 - val_mae: 78.4049 - learning_rate: 0.0010
+Epoch 13/100
+50/50 ━━━━━━━━━━━━━━━━━━━━ 0s 5ms/step - loss: 8947.6445 - mae: 75.2435 - val_loss: 8843.9521 - val_mae: 75.5024 - learning_rate: 0.0010
+Epoch 14/100
+50/50 ━━━━━━━━━━━━━━━━━━━━ 0s 7ms/step - loss: 8177.2373 - mae: 73.3531 - val_loss: 8947.9160 - val_mae: 76.0912 - learning_rate: 0.0010
+Epoch 15/100
+50/50 ━━━━━━━━━━━━━━━━━━━━ 0s 5ms/step - loss: 7707.8711 - mae: 70.5306 - val_loss: 9074.6074 - val_mae: 77.0114 - learning_rate: 0.0010
+Epoch 16/100
+50/50 ━━━━━━━━━━━━━━━━━━━━ 0s 7ms/step - loss: 8359.9941 - mae: 72.8954 - val_loss: 9240.4141 - val_mae: 78.0558 - learning_rate: 0.0010
+Epoch 17/100
+50/50 ━━━━━━━━━━━━━━━━━━━━ 1s 12ms/step - loss: 8170.7603 - mae: 72.0505 - val_loss: 6949.5464 - val_mae: 65.5160 - learning_rate: 0.0010
+Epoch 18/100
+50/50 ━━━━━━━━━━━━━━━━━━━━ 0s 6ms/step - loss: 7756.3921 - mae: 70.4938 - val_loss: 6883.5439 - val_mae: 65.6105 - learning_rate: 0.0010
+Epoch 19/100
+50/50 ━━━━━━━━━━━━━━━━━━━━ 0s 8ms/step - loss: 7780.7539 - mae: 69.6844 - val_loss: 8567.9727 - val_mae: 74.9740 - learning_rate: 0.0010
+Epoch 20/100
+50/50 ━━━━━━━━━━━━━━━━━━━━ 0s 6ms/step - loss: 7790.0405 - mae: 69.5640 - val_loss: 6809.5967 - val_mae: 65.4689 - learning_rate: 0.0010
+Epoch 21/100
+50/50 ━━━━━━━━━━━━━━━━━━━━ 0s 7ms/step - loss: 7333.1572 - mae: 68.7180 - val_loss: 8449.9707 - val_mae: 75.0943 - learning_rate: 0.0010
+Epoch 22/100
+50/50 ━━━━━━━━━━━━━━━━━━━━ 0s 6ms/step - loss: 6424.2861 - mae: 63.5656 - val_loss: 7503.7432 - val_mae: 69.2572 - learning_rate: 0.0010
+Epoch 23/100
+50/50 ━━━━━━━━━━━━━━━━━━━━ 0s 7ms/step - loss: 6653.4600 - mae: 64.2732 - val_loss: 5355.4751 - val_mae: 57.3648 - learning_rate: 0.0010
+Epoch 24/100
+50/50 ━━━━━━━━━━━━━━━━━━━━ 0s 7ms/step - loss: 6721.2896 - mae: 65.3049 - val_loss: 8391.5566 - val_mae: 74.9008 - learning_rate: 0.0010
+Epoch 25/100
+50/50 ━━━━━━━━━━━━━━━━━━━━ 0s 6ms/step - loss: 6629.1387 - mae: 66.3835 - val_loss: 6996.2207 - val_mae: 67.1946 - learning_rate: 0.0010
+Epoch 26/100
+50/50 ━━━━━━━━━━━━━━━━━━━━ 0s 5ms/step - loss: 6495.1841 - mae: 64.4357 - val_loss: 6489.5889 - val_mae: 63.9158 - learning_rate: 0.0010
+Epoch 27/100
+50/50 ━━━━━━━━━━━━━━━━━━━━ 0s 6ms/step - loss: 6184.8374 - mae: 62.6039 - val_loss: 5470.2188 - val_mae: 57.8558 - learning_rate: 0.0010
+Epoch 28/100
+50/50 ━━━━━━━━━━━━━━━━━━━━ 0s 5ms/step - loss: 6228.9175 - mae: 61.5861 - val_loss: 5185.5801 - val_mae: 56.7615 - learning_rate: 0.0010
+Epoch 29/100
+50/50 ━━━━━━━━━━━━━━━━━━━━ 0s 4ms/step - loss: 6614.3350 - mae: 63.7947 - val_loss: 5726.7070 - val_mae: 59.7795 - learning_rate: 0.0010
+Epoch 30/100
+50/50 ━━━━━━━━━━━━━━━━━━━━ 0s 5ms/step - loss: 5839.0474 - mae: 61.4744 - val_loss: 5095.7676 - val_mae: 55.9836 - learning_rate: 0.0010
+Epoch 31/100
+50/50 ━━━━━━━━━━━━━━━━━━━━ 0s 5ms/step - loss: 5688.5947 - mae: 60.0680 - val_loss: 5335.1182 - val_mae: 57.8664 - learning_rate: 0.0010
+Epoch 32/100
+50/50 ━━━━━━━━━━━━━━━━━━━━ 0s 5ms/step - loss: 5706.4243 - mae: 59.5868 - val_loss: 4977.0269 - val_mae: 55.4655 - learning_rate: 0.0010
+Epoch 33/100
+50/50 ━━━━━━━━━━━━━━━━━━━━ 0s 4ms/step - loss: 4708.7017 - mae: 54.1779 - val_loss: 6652.9106 - val_mae: 66.4956 - learning_rate: 0.0010
+Epoch 34/100
+50/50 ━━━━━━━━━━━━━━━━━━━━ 0s 5ms/step - loss: 5197.4556 - mae: 56.6413 - val_loss: 5969.1265 - val_mae: 62.3760 - learning_rate: 0.0010
+Epoch 35/100
+50/50 ━━━━━━━━━━━━━━━━━━━━ 0s 5ms/step - loss: 5298.6030 - mae: 57.3563 - val_loss: 5437.3496 - val_mae: 58.9924 - learning_rate: 0.0010
+Epoch 36/100
+50/50 ━━━━━━━━━━━━━━━━━━━━ 0s 5ms/step - loss: 5191.6816 - mae: 56.7530 - val_loss: 5685.4019 - val_mae: 61.3115 - learning_rate: 0.0010
+Epoch 37/100
+50/50 ━━━━━━━━━━━━━━━━━━━━ 0s 5ms/step - loss: 4803.0586 - mae: 54.2188 - val_loss: 4985.1074 - val_mae: 56.2374 - learning_rate: 0.0010
+Epoch 38/100
+50/50 ━━━━━━━━━━━━━━━━━━━━ 0s 4ms/step - loss: 5168.5254 - mae: 57.4194 - val_loss: 4765.8340 - val_mae: 54.9895 - learning_rate: 5.0000e-04
+Epoch 39/100
+50/50 ━━━━━━━━━━━━━━━━━━━━ 0s 4ms/step - loss: 4500.7334 - mae: 53.8374 - val_loss: 4131.5142 - val_mae: 50.5603 - learning_rate: 5.0000e-04
+Epoch 40/100
+50/50 ━━━━━━━━━━━━━━━━━━━━ 0s 5ms/step - loss: 4781.4019 - mae: 54.2742 - val_loss: 5660.9224 - val_mae: 61.0406 - learning_rate: 5.0000e-04
+Epoch 41/100
+50/50 ━━━━━━━━━━━━━━━━━━━━ 0s 4ms/step - loss: 5094.5532 - mae: 56.3177 - val_loss: 4820.9961 - val_mae: 55.3439 - learning_rate: 5.0000e-04
+Epoch 42/100
+50/50 ━━━━━━━━━━━━━━━━━━━━ 0s 6ms/step - loss: 4496.1572 - mae: 52.3675 - val_loss: 4785.8613 - val_mae: 55.0742 - learning_rate: 5.0000e-04
+Epoch 43/100
+50/50 ━━━━━━━━━━━━━━━━━━━━ 0s 4ms/step - loss: 4885.5137 - mae: 54.2831 - val_loss: 4977.2202 - val_mae: 56.7983 - learning_rate: 5.0000e-04
+Epoch 44/100
+50/50 ━━━━━━━━━━━━━━━━━━━━ 0s 5ms/step - loss: 4572.7939 - mae: 52.2874 - val_loss: 4689.9038 - val_mae: 54.9805 - learning_rate: 5.0000e-04
+Epoch 45/100
+50/50 ━━━━━━━━━━━━━━━━━━━━ 0s 5ms/step - loss: 4564.9922 - mae: 53.3819 - val_loss: 4864.8608 - val_mae: 56.2239 - learning_rate: 2.5000e-04
+Epoch 46/100
+50/50 ━━━━━━━━━━━━━━━━━━━━ 0s 4ms/step - loss: 4534.4263 - mae: 53.0368 - val_loss: 4230.3076 - val_mae: 51.8488 - learning_rate: 2.5000e-04
+Epoch 47/100
+50/50 ━━━━━━━━━━━━━━━━━━━━ 0s 4ms/step - loss: 4653.4458 - mae: 53.5095 - val_loss: 4984.1377 - val_mae: 57.0671 - learning_rate: 2.5000e-04
+Epoch 48/100
+50/50 ━━━━━━━━━━━━━━━━━━━━ 0s 5ms/step - loss: 4288.7261 - mae: 51.4407 - val_loss: 4763.1323 - val_mae: 55.7917 - learning_rate: 2.5000e-04
+Epoch 49/100
+50/50 ━━━━━━━━━━━━━━━━━━━━ 0s 5ms/step - loss: 5105.0947 - mae: 56.9926 - val_loss: 4868.0439 - val_mae: 56.4425 - learning_rate: 2.5000e-04
+50/50 ━━━━━━━━━━━━━━━━━━━━ 0s 2ms/step   
+13/13 ━━━━━━━━━━━━━━━━━━━━ 0s 9ms/step 
+INFO:models.ml_model_trainer:✅ Neural Network training completed. Test R²: -0.0102
+INFO:models.ml_model_trainer:📊 Comparing model performance...
+INFO:models.ml_model_trainer:🏆 Best model: random_forest (R²: 0.7883)
+INFO:models.ml_model_trainer:💾 Saving models and metadata...
+INFO:models.ml_model_trainer:   💾 random_forest: models/random_forest_20250621_183129.joblib
+INFO:models.ml_model_trainer:   📊 random_forest metrics: models/random_forest_metrics_20250621_183129.json
+WARNING:absl:You are saving your model as an HDF5 file via `model.save()` or `keras.saving.save_model(model)`. This file format is considered legacy. We recommend using instead the native Keras format, e.g. `model.save('my_model.keras')` or `keras.saving.save_model(model, 'my_model.keras')`. 
+INFO:models.ml_model_trainer:   💾 neural_network: models/neural_network_20250621_183129.joblib
+INFO:models.ml_model_trainer:   📊 neural_network metrics: models/neural_network_metrics_20250621_183129.json
+INFO:models.ml_model_trainer:   📊 Model comparison: models/model_comparison_20250621_183129.json
+INFO:ml_pipeline:✅ Model training completed!
+INFO:ml_pipeline:📈 Step 4: Model Evaluation
+INFO:ml_pipeline:📈 Evaluating models...
+13/13 ━━━━━━━━━━━━━━━━━━━━ 0s 4ms/step 
+INFO:ml_pipeline:✅ Model evaluation completed!
+INFO:ml_pipeline:💾 Step 5: Save Results
+INFO:ml_pipeline:💾 Saving pipeline results...
+INFO:ml_pipeline:💾 Pipeline results saved: results/pipeline_results_20250621_183130.json
+INFO:ml_pipeline:📋 Step 6: Generate Reports
+INFO:ml_pipeline:📋 Generating reports...
+INFO:ml_pipeline:📊 Model comparison report: results/model_comparison_report_20250621_183130.md
+INFO:ml_pipeline:📊 Feature importance report: results/feature_importance_report_20250621_183130.md
+INFO:ml_pipeline:📊 Performance summary: results/performance_summary_20250621_183130.md
+INFO:ml_pipeline:✅ Reports generated successfully!
+INFO:ml_pipeline:✅ Complete ML Pipeline finished successfully!
+
+📊 Pipeline Results Summary
+------------------------------
+🏆 Best Model: random_forest
+📈 Best R² Score: 0.7883
+🤖 Models Trained: 2
+📊 Training Data: 2000 samples, 49 features
+📏 Target Mean: 246.84 Wh/km
+📏 Target Std: 63.65 Wh/km
+
+📋 Model Performance Comparison
+-----------------------------------
+Model                R² Score   MAE        RMSE      
+--------------------------------------------------
+Random Forest        0.7883     22.3566    29.4236   
+Neural Network       -0.0102    50.5603    64.2769   
+
+🔮 Model Prediction Demonstration
+-----------------------------------
+📝 Sample Input Data:
+   speed_limit_kmh  elevation_gradient  road_length_m  road_curvature  weather_temperature_celsius  weather_humidity_percent  weather_wind_speed_ms  weather_precipitation_mm  traffic_density  traffic_average_speed_kmh  traffic_travel_time_factor  ev_battery_capacity_kwh  ev_efficiency_wh_per_km  ev_battery_level_percent  ev_vehicle_weight_kg  energy_efficiency_factor  temperature_impact  traffic_energy_impact  elevation_energy_impact  hour_of_day  day_of_week  is_weekend  is_rush_hour  speed_elevation_interaction  temperature_traffic_interaction  weather_traffic_interaction  speed_limit_squared  elevation_gradient_squared  temperature_squared  speed_to_limit_ratio  energy_efficiency_ratio  highway_encoded  road_type_encoded  surface_encoded  weather_condition_encoded  traffic_congestion_level_encoded  distance_to_nearest_charger_km  charger_density_per_km2
+0               50                0.02            500            0.01                           15                        60                      5                         0              0.3                         45                         1.1                       75                      150                       0.6                  1800                       1.0                1.05                    1.1                     1.02            8            1           0             1                          1.0                              4.5                          0.0                 2500                      0.0004                  225                  0.90                   0.0067                2                  1                0                          0                                 1                             1.5                      0.5
+1               80               -0.01           1000            0.05                           25                        70                     10                         2              0.7                         65                         1.5                       75                      150                       0.8                  1800                       1.1                1.02                    1.3                     0.99           14            3           0             0                         -0.8                             17.5                          1.4                 6400                      0.0001                  625                  0.81                   0.0073                0                  0                1                          1                                 2                             3.0                      0.2
+2               30                0.05            200            0.02                            5                        80                     15                         5              0.5                         25                         1.8                       75                      150                       0.4                  1800                       0.9                1.08                    1.2                     1.05           18            5           0             1                          1.5                              2.5                          2.5                  900                      0.0025                   25                  0.83                   0.0060                3                  2                0                          2                                 1                             0.8                      1.2
+INFO:data_integration.ml_data_preprocessor:📏 Scaling features...
+❌ Prediction failed: The feature names should match those that were passed during fit.
+Feature names seen at fit time, yet now missing:
+- ev_aerodynamic_coefficient
+- ev_elevation_impact_factor
+- ev_regenerative_braking_efficiency
+- ev_regenerative_braking_factor
+- ev_temperature_impact_factor
+- ...
+
+
+🔍 Feature Importance Analysis
+------------------------------
+🏆 Top 10 Most Important Features:
+-----------------------------------
+Rank  Feature                        Importance
+---------------------------------------------
+1     ev_efficiency_wh_per_km        0.1921    
+2     energy_efficiency_factor       0.1865    
+3     temperature_traffic_interaction 0.1808    
+4     weather_precipitation_mm       0.1548    
+5     weather_wind_speed_ms          0.0714    
+6     speed_to_limit_ratio           0.0406    
+7     weather_temperature_celsius    0.0153    
+8     traffic_density                0.0125    
+9     temperature_squared            0.0084    
+10    energy_efficiency_ratio        0.0074    
+
+📊 Feature Categories:
+   🛣️  Road Features: 14
+   🌤️  Weather Features: 8
+   🚗 Traffic Features: 9
+   ⚡ EV Features: 11
+
+✅ ML Pipeline demonstration completed successfully!
+
+============================================================
