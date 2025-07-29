@@ -23,7 +23,7 @@ class Config:
     TOMTOM_API_KEY = os.getenv('TOMTOM_API_KEY')
     GOOGLE_MAPS_API_KEY = os.getenv('GOOGLE_MAPS_API_KEY')
     
-    # Berlin-specific coordinates (bounding box) - Extremely tiny area for instant testing
+    # Berlin-specific coordinates (bounding box) - Small central Berlin area
     BERLIN_BOUNDS = {
         'north': 52.5205,
         'south': 52.5195,

@@ -280,9 +280,9 @@ class OpenStreetMapCollector:
         
         # Elevation gradient impact
         gradient = row.get('elevation_gradient', 0)
-        if gradient > 0.05:  # 5% uphill
+        if gradient and gradient > 0.05:  # 5% uphill
             base_efficiency *= 1.3
-        elif gradient < -0.05:  # 5% downhill
+        elif gradient and gradient < -0.05:  # 5% downhill
             base_efficiency *= 0.8
         
         return base_efficiency

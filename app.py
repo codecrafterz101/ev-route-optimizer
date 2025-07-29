@@ -135,6 +135,8 @@ def optimize_route():
         origin_coords = _geocode_address(origin)
         dest_coords = _geocode_address(destination)
         
+        logger.info(f"Geocoded coordinates - Origin: {origin} -> {origin_coords}, Destination: {destination} -> {dest_coords}")
+        
         if not origin_coords or not dest_coords:
             return jsonify({
                 'status': 'error',
@@ -166,13 +168,25 @@ def optimize_route():
         total_energy = 0
         for seg in route_segments:
             segment_distance_km = seg.geometry.length * 111
-            segment_energy_wh_per_km = seg.get('final_energy_wh_per_km', 150)  # Default if not available
+            # Handle pandas Series properly
+            if hasattr(seg, 'get'):
+                segment_energy_wh_per_km = seg.get('final_energy_wh_per_km', 150)
+            else:
+                segment_energy_wh_per_km = 150  # Default if not available
             segment_energy_wh = segment_distance_km * segment_energy_wh_per_km
             total_energy += segment_energy_wh
         total_energy = total_energy / 1000  # Convert to kWh
-        avg_energy_per_km = sum(seg.get('final_energy_wh_per_km', 150) for seg in route_segments) / len(route_segments)
         
-        # Create route response
+        # Calculate average energy per km
+        energy_values = []
+        for seg in route_segments:
+            if hasattr(seg, 'get'):
+                energy_values.append(seg.get('final_energy_wh_per_km', 150))
+            else:
+                energy_values.append(150)
+        avg_energy_per_km = sum(energy_values) / len(route_segments) if route_segments else 150
+        
+        # Create route response with improved coordinate data
         route_data = {
             'route_id': f"route_{datetime.now().strftime('%Y%m%d_%H%M%S')}",
             'origin': origin,
@@ -181,23 +195,64 @@ def optimize_route():
             'total_energy_kwh': round(total_energy, 2),
             'avg_energy_per_km': round(avg_energy_per_km, 2),
             'estimated_time_minutes': round(total_distance / 50 * 60, 0),  # Assume 50 km/h avg
-            'route_segments': [
-                {
-                    'segment_id': i,
-                    'distance_km': round(seg.geometry.length * 111, 3),
-                    'energy_wh_per_km': round(seg['final_energy_wh_per_km'], 2),
-                    'speed_limit': seg.get('speed_limit_kmh', 50),
-                    'road_type': seg.get('road_type', 'unknown'),
-                    'segment_energy_wh': round(seg['final_energy_wh_per_km'] * seg.geometry.length * 111, 2),
-                    'estimated_time_minutes': round((seg.geometry.length * 111) / (seg.get('speed_limit_kmh', 50) / 60), 1),
-                    'traffic_density': seg.get('traffic_density', 0.3),
-                    'weather_condition': seg.get('weather_condition', 'clear'),
-                    'coordinates': [[seg.geometry.bounds[1], seg.geometry.bounds[0]], 
-                                  [seg.geometry.bounds[3], seg.geometry.bounds[2]]]
-                }
-                for i, seg in enumerate(route_segments)
-            ]
+            'route_segments': []
         }
+        
+        # Generate continuous path coordinates
+        all_coordinates = []
+        for i, seg in enumerate(route_segments):
+            # Get segment coordinates
+            if hasattr(seg.geometry, 'coords'):
+                coords = list(seg.geometry.coords)
+                # Shapely coordinates are (lon, lat), convert to [lat, lon] for Leaflet
+                segment_coords = [[lat, lon] for lon, lat in coords]
+            else:
+                # Fallback to bounds if coords not available
+                # bounds are (minx, miny, maxx, maxy) where x=lon, y=lat
+                segment_coords = [
+                    [seg.geometry.bounds[1], seg.geometry.bounds[0]],  # [lat, lon] from bounds
+                    [seg.geometry.bounds[3], seg.geometry.bounds[2]]
+                ]
+            
+            # Add intermediate points for smoother path
+            if i > 0 and len(all_coordinates) > 0:
+                # Connect to previous segment
+                last_coord = all_coordinates[-1]
+                first_coord = segment_coords[0]
+                
+                # Add intermediate point
+                mid_lat = (last_coord[0] + first_coord[0]) / 2
+                mid_lon = (last_coord[1] + first_coord[1]) / 2
+                all_coordinates.append([mid_lat, mid_lon])
+            
+            all_coordinates.extend(segment_coords)
+            
+            # Safely get segment values
+            energy_wh_per_km = seg.get('final_energy_wh_per_km', 150) if hasattr(seg, 'get') else 150
+            speed_limit = seg.get('speed_limit_kmh', 50) if hasattr(seg, 'get') else 50
+            road_type = seg.get('road_type', 'unknown') if hasattr(seg, 'get') else 'unknown'
+            traffic_density = seg.get('traffic_density', 0.3) if hasattr(seg, 'get') else 0.3
+            weather_condition = seg.get('weather_condition', 'clear') if hasattr(seg, 'get') else 'clear'
+            
+            route_data['route_segments'].append({
+                'segment_id': i,
+                'distance_km': round(seg.geometry.length * 111, 3),
+                'energy_wh_per_km': round(energy_wh_per_km, 2),
+                'speed_limit': speed_limit,
+                'road_type': road_type,
+                'segment_energy_wh': round(energy_wh_per_km * seg.geometry.length * 111, 2),
+                'estimated_time_minutes': round((seg.geometry.length * 111) / (speed_limit / 60), 1),
+                'traffic_density': traffic_density,
+                'weather_condition': weather_condition,
+                'coordinates': segment_coords
+            })
+        
+        # Add continuous path coordinates to route data
+        route_data['continuous_path'] = all_coordinates
+        
+        logger.info(f"Generated route with {len(all_coordinates)} coordinates")
+        logger.info(f"First few coordinates: {all_coordinates[:3]}")
+        logger.info(f"Last few coordinates: {all_coordinates[-3:]}")
         
         return jsonify({
             'status': 'success',
@@ -213,50 +268,30 @@ def optimize_route():
 
 def _geocode_address(address):
     """Convert address to coordinates (simplified for Berlin)"""
-    # Simplified geocoding for Berlin landmarks
+    # Simplified geocoding for Berlin landmarks (restricted to small area)
     berlin_landmarks = {
-        'berlin hauptbahnhof': (52.525, 13.369),
-        'hauptbahnhof': (52.525, 13.369),
+        # Points within our small bounds (52.5195-52.5205, 13.411-13.412)
+        'mitte center': (52.520, 13.4115),
         'alexanderplatz': (52.522, 13.413),
+        'museum island': (52.521, 13.397),
+        'museumsinsel': (52.521, 13.397),
         'brandenburg gate': (52.516, 13.377),
         'brandenburger tor': (52.516, 13.377),
-        'treptower park': (52.489, 13.456),
-        'potsdamer platz': (52.509, 13.375),
-        'kurfürstendamm': (52.504, 13.327),
-        'checkpoint charlie': (52.507, 13.390),
         'reichstag': (52.518, 13.376),
         'victory column': (52.514, 13.350),
         'siegessäule': (52.514, 13.350),
-        'museum island': (52.521, 13.397),
-        'museumsinsel': (52.521, 13.397),
-        'charlottenburg palace': (52.520, 13.296),
-        'schloss charlottenburg': (52.520, 13.296),
-        'tempelhof airport': (52.473, 13.404),
-        'flughafen tempelhof': (52.473, 13.404),
-        'zoologischer garten': (52.507, 13.337),
-        'berlin zoo': (52.507, 13.337),
-        'east side gallery': (52.505, 13.443),
         'holocaust memorial': (52.517, 13.378),
         'memorial to the murdered jews': (52.517, 13.378),
-        'kaiser wilhelm memorial church': (52.505, 13.335),
-        'gedächtniskirche': (52.505, 13.335),
-        'berlin wall memorial': (52.535, 13.389),
         'gendarmenmarkt': (52.514, 13.393),
         'unter den linden': (52.517, 13.389),
         'friedrichstraße': (52.520, 13.387),
-        'kottbusser tor': (52.499, 13.419),
-        'hermannplatz': (52.483, 13.424),
-        'warschauer straße': (52.500, 13.450),
-        'frankfurter tor': (52.515, 13.454),
+        'hackescher markt': (52.523, 13.402),
         'rosenthaler platz': (52.527, 13.407),
         'weinmeisterstraße': (52.525, 13.405),
-        'hackescher markt': (52.523, 13.402),
         'jannowitzbrücke': (52.515, 13.420),
         'ostbahnhof': (52.510, 13.434),
         'friedrichshain': (52.515, 13.454),
         'kreuzberg': (52.497, 13.388),
-        'neukölln': (52.483, 13.424),
-        'mitte': (52.520, 13.405),
         'prenzlauer berg': (52.535, 13.420),
         'wedding': (52.545, 13.355),
         'moabit': (52.525, 13.340),
@@ -264,6 +299,24 @@ def _geocode_address(address):
         'schöneberg': (52.483, 13.355),
         'wilmersdorf': (52.490, 13.320),
         'charlottenburg': (52.520, 13.296),
+        'charlottenburg palace': (52.520, 13.296),
+        'schloss charlottenburg': (52.520, 13.296),
+        'berlin hauptbahnhof': (52.525, 13.369),
+        'hauptbahnhof': (52.525, 13.369),
+        'potsdamer platz': (52.509, 13.375),
+        'checkpoint charlie': (52.507, 13.390),
+        'kaiser wilhelm memorial church': (52.505, 13.335),
+        'gedächtniskirche': (52.505, 13.335),
+        'kurfürstendamm': (52.504, 13.327),
+        'zoologischer garten': (52.507, 13.337),
+        'berlin zoo': (52.507, 13.337),
+        'east side gallery': (52.505, 13.443),
+        'berlin wall memorial': (52.535, 13.389),
+        'kottbusser tor': (52.499, 13.419),
+        'hermannplatz': (52.483, 13.424),
+        'warschauer straße': (52.500, 13.450),
+        'frankfurter tor': (52.515, 13.454),
+        'neukölln': (52.483, 13.424),
         'spandau': (52.535, 13.200),
         'reinickendorf': (52.590, 13.320),
         'pankow': (52.570, 13.410),
@@ -275,28 +328,8 @@ def _geocode_address(address):
         'steglitz': (52.455, 13.320),
         'zehlendorf': (52.430, 13.230),
         'tempelhof': (52.473, 13.404),
-        'neukölln': (52.483, 13.424),
-        'friedrichshain': (52.515, 13.454),
-        'kreuzberg': (52.497, 13.388),
-        'mitte': (52.520, 13.405),
-        'prenzlauer berg': (52.535, 13.420),
-        'wedding': (52.545, 13.355),
-        'moabit': (52.525, 13.340),
-        'tiergarten': (52.514, 13.350),
-        'schöneberg': (52.483, 13.355),
-        'wilmersdorf': (52.490, 13.320),
-        'charlottenburg': (52.520, 13.296),
-        'spandau': (52.535, 13.200),
-        'reinickendorf': (52.590, 13.320),
-        'pankow': (52.570, 13.410),
-        'lichtenberg': (52.520, 13.480),
-        'marzahn': (52.545, 13.545),
-        'hohenschönhausen': (52.545, 13.480),
-        'treptow': (52.489, 13.456),
-        'köpenick': (52.445, 13.575),
-        'steglitz': (52.455, 13.320),
-        'zehlendorf': (52.430, 13.230),
-        'tempelhof': (52.473, 13.404),
+        'tempelhof airport': (52.473, 13.404),
+        'flughafen tempelhof': (52.473, 13.404),
     }
     
     # Normalize address for matching
@@ -318,7 +351,8 @@ def _geocode_address(address):
 def _find_closest_segment(road_network, coords):
     """Find the closest road segment to given coordinates"""
     
-    point = Point(coords[1], coords[0])  # (lon, lat)
+    # coords is (lat, lon) from geocoding, but Point expects (lon, lat)
+    point = Point(coords[1], coords[0])  # Convert to (lon, lat)
     min_distance = float('inf')
     closest_segment = None
     
@@ -332,69 +366,76 @@ def _find_closest_segment(road_network, coords):
 
 def _calculate_route(road_network, origin_segment, dest_segment):
     """Calculate route between origin and destination segments"""
-    # Simplified routing: find a path through nearby segments
-    # In a real implementation, this would use a proper routing algorithm
+    # Create a continuous path using interpolation between origin and destination
     
-    # Get segments within a reasonable distance
     origin_point = origin_segment.geometry.centroid
     dest_point = dest_segment.geometry.centroid
     
     # Calculate distance between origin and destination
     distance_km = origin_point.distance(dest_point) * 111  # Convert to km
     
-    # For demo purposes, create a route with segments that connect origin to destination
-    # In reality, this would use a proper routing algorithm like A* or Dijkstra
-    
-    # Find segments that are roughly in the direction of the destination
+    # Create a continuous path with interpolated points
     route_segments = []
     
     # Add origin segment
     route_segments.append(origin_segment)
     
-    # Find intermediate segments (simplified approach)
-    current_point = origin_point
-    target_point = dest_point
+    # Calculate number of intermediate points based on distance
+    num_intermediate_points = max(3, min(8, int(distance_km / 2)))
     
-    # Calculate direction vector
-    direction_lon = target_point.x - current_point.x
-    direction_lat = target_point.y - current_point.y
-    
-    # Find segments that move towards the destination
-    for idx, segment in road_network.iterrows():
-        if len(route_segments) >= 8:  # Limit route length
-            break
-            
-        segment_center = segment.geometry.centroid
+    # Create interpolated route points
+    for i in range(1, num_intermediate_points + 1):
+        # Interpolate between origin and destination
+        t = i / (num_intermediate_points + 1)
+        interpolated_lon = origin_point.x + t * (dest_point.x - origin_point.x)
+        interpolated_lat = origin_point.y + t * (dest_point.y - origin_point.y)
         
-        # Check if segment moves towards destination
-        segment_direction_lon = segment_center.x - current_point.x
-        segment_direction_lat = segment_center.y - current_point.y
+        # Find the closest road segment to this interpolated point
+        interpolated_point = Point(interpolated_lon, interpolated_lat)
+        closest_segment = None
+        min_distance = float('inf')
         
-        # Calculate dot product to check if moving in right direction
-        dot_product = (direction_lon * segment_direction_lon + 
-                      direction_lat * segment_direction_lat)
+        for idx, segment in road_network.iterrows():
+            distance = interpolated_point.distance(segment.geometry)
+            if distance < min_distance:
+                min_distance = distance
+                closest_segment = segment
         
-        if dot_product > 0:  # Moving towards destination
-            # Check if segment is reasonably close
-            distance_to_current = segment_center.distance(current_point)
-            if distance_to_current < 0.01:  # Within ~1km
-                route_segments.append(segment)
-                current_point = segment_center
+        if closest_segment is not None and closest_segment.name not in [seg.name for seg in route_segments]:
+            route_segments.append(closest_segment)
     
     # Add destination segment
     route_segments.append(dest_segment)
     
-    # If we don't have enough segments, add some random ones for demo
-    # Use a set to track segment indices to avoid duplicates
+    # Ensure we have at least 5 segments for a good visualization
     segment_indices = set()
     for seg in route_segments:
-        segment_indices.add(seg.name)  # Add the index of the segment
+        segment_indices.add(seg.name)
     
+    # If we don't have enough segments, add some nearby segments
     while len(route_segments) < 5:
-        random_segment = road_network.sample(1).iloc[0]
-        if random_segment.name not in segment_indices:
-            route_segments.append(random_segment)
-            segment_indices.add(random_segment.name)
+        # Find segments near the middle of our route
+        if len(route_segments) > 0:
+            mid_point = route_segments[len(route_segments)//2].geometry.centroid
+        else:
+            mid_point = origin_point
+        
+        # Find closest segment to mid point that we haven't used
+        closest_to_mid = None
+        min_distance = float('inf')
+        
+        for idx, segment in road_network.iterrows():
+            if segment.name not in segment_indices:
+                distance = mid_point.distance(segment.geometry.centroid)
+                if distance < min_distance:
+                    min_distance = distance
+                    closest_to_mid = segment
+        
+        if closest_to_mid is not None:
+            route_segments.append(closest_to_mid)
+            segment_indices.add(closest_to_mid.name)
+        else:
+            break
     
     return route_segments
 

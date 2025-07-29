@@ -241,6 +241,25 @@
             }
         }
 
+        @keyframes routePulse {
+            0% {
+                stroke-width: 8;
+                opacity: 0.9;
+            }
+            50% {
+                stroke-width: 12;
+                opacity: 1;
+            }
+            100% {
+                stroke-width: 8;
+                opacity: 0.9;
+            }
+        }
+
+        .route-highlight {
+            animation: routePulse 2s ease-in-out infinite;
+        }
+
         .alert {
             border-radius: 10px;
             border: none;
@@ -333,30 +352,119 @@
                         <form id="route-form">
                             <div class="mb-3">
                                 <label for="origin" class="form-label">Origin</label>
-                                <input type="text" class="form-control" id="origin"
-                                    placeholder="Enter starting location" required>
+                                <select class="form-select" id="origin" required>
+                                    <option value="">Select starting location</option>
+                                    <option value="mitte center">Mitte Center</option>
+                                    <option value="alexanderplatz">Alexanderplatz</option>
+                                    <option value="museum island">Museum Island</option>
+                                    <option value="brandenburg gate">Brandenburg Gate</option>
+                                    <option value="reichstag">Reichstag</option>
+                                    <option value="victory column">Victory Column</option>
+                                    <option value="holocaust memorial">Holocaust Memorial</option>
+                                    <option value="gendarmenmarkt">Gendarmenmarkt</option>
+                                    <option value="unter den linden">Unter den Linden</option>
+                                    <option value="friedrichstraße">Friedrichstraße</option>
+                                    <option value="hackescher markt">Hackescher Markt</option>
+                                    <option value="rosenthaler platz">Rosenthaler Platz</option>
+                                    <option value="weinmeisterstraße">Weinmeisterstraße</option>
+                                    <option value="jannowitzbrücke">Jannowitzbrücke</option>
+                                    <option value="ostbahnhof">Ostbahnhof</option>
+                                    <option value="friedrichshain">Friedrichshain</option>
+                                    <option value="kreuzberg">Kreuzberg</option>
+                                    <option value="prenzlauer berg">Prenzlauer Berg</option>
+                                    <option value="wedding">Wedding</option>
+                                    <option value="moabit">Moabit</option>
+                                    <option value="tiergarten">Tiergarten</option>
+                                    <option value="schöneberg">Schöneberg</option>
+                                    <option value="wilmersdorf">Wilmersdorf</option>
+                                    <option value="charlottenburg">Charlottenburg</option>
+                                    <option value="charlottenburg palace">Charlottenburg Palace</option>
+                                    <option value="berlin hauptbahnhof">Berlin Hauptbahnhof</option>
+                                    <option value="potsdamer platz">Potsdamer Platz</option>
+                                    <option value="checkpoint charlie">Checkpoint Charlie</option>
+                                    <option value="kaiser wilhelm memorial church">Kaiser Wilhelm Memorial Church</option>
+                                    <option value="kurfürstendamm">Kurfürstendamm</option>
+                                    <option value="zoologischer garten">Zoologischer Garten</option>
+                                    <option value="berlin zoo">Berlin Zoo</option>
+                                    <option value="east side gallery">East Side Gallery</option>
+                                    <option value="berlin wall memorial">Berlin Wall Memorial</option>
+                                    <option value="kottbusser tor">Kottbusser Tor</option>
+                                    <option value="hermannplatz">Hermannplatz</option>
+                                    <option value="warschauer straße">Warschauer Straße</option>
+                                    <option value="frankfurter tor">Frankfurter Tor</option>
+                                    <option value="neukölln">Neukölln</option>
+                                    <option value="spandau">Spandau</option>
+                                    <option value="reinickendorf">Reinickendorf</option>
+                                    <option value="pankow">Pankow</option>
+                                    <option value="lichtenberg">Lichtenberg</option>
+                                    <option value="marzahn">Marzahn</option>
+                                    <option value="hohenschönhausen">Hohenschönhausen</option>
+                                    <option value="treptow">Treptow</option>
+                                    <option value="köpenick">Köpenick</option>
+                                    <option value="steglitz">Steglitz</option>
+                                    <option value="zehlendorf">Zehlendorf</option>
+                                    <option value="tempelhof">Tempelhof</option>
+                                    <option value="tempelhof airport">Tempelhof Airport</option>
+                                </select>
                             </div>
                             <div class="mb-3">
                                 <label for="destination" class="form-label">Destination</label>
-                                <input type="text" class="form-control" id="destination" placeholder="Enter destination"
-                                    required>
+                                <select class="form-select" id="destination" required>
+                                    <option value="">Select destination</option>
+                                    <option value="mitte center">Mitte Center</option>
+                                    <option value="alexanderplatz">Alexanderplatz</option>
+                                    <option value="museum island">Museum Island</option>
+                                    <option value="brandenburg gate">Brandenburg Gate</option>
+                                    <option value="reichstag">Reichstag</option>
+                                    <option value="victory column">Victory Column</option>
+                                    <option value="holocaust memorial">Holocaust Memorial</option>
+                                    <option value="gendarmenmarkt">Gendarmenmarkt</option>
+                                    <option value="unter den linden">Unter den Linden</option>
+                                    <option value="friedrichstraße">Friedrichstraße</option>
+                                    <option value="hackescher markt">Hackescher Markt</option>
+                                    <option value="rosenthaler platz">Rosenthaler Platz</option>
+                                    <option value="weinmeisterstraße">Weinmeisterstraße</option>
+                                    <option value="jannowitzbrücke">Jannowitzbrücke</option>
+                                    <option value="ostbahnhof">Ostbahnhof</option>
+                                    <option value="friedrichshain">Friedrichshain</option>
+                                    <option value="kreuzberg">Kreuzberg</option>
+                                    <option value="prenzlauer berg">Prenzlauer Berg</option>
+                                    <option value="wedding">Wedding</option>
+                                    <option value="moabit">Moabit</option>
+                                    <option value="tiergarten">Tiergarten</option>
+                                    <option value="schöneberg">Schöneberg</option>
+                                    <option value="wilmersdorf">Wilmersdorf</option>
+                                    <option value="charlottenburg">Charlottenburg</option>
+                                    <option value="charlottenburg palace">Charlottenburg Palace</option>
+                                    <option value="berlin hauptbahnhof">Berlin Hauptbahnhof</option>
+                                    <option value="potsdamer platz">Potsdamer Platz</option>
+                                    <option value="checkpoint charlie">Checkpoint Charlie</option>
+                                    <option value="kaiser wilhelm memorial church">Kaiser Wilhelm Memorial Church</option>
+                                    <option value="kurfürstendamm">Kurfürstendamm</option>
+                                    <option value="zoologischer garten">Zoologischer Garten</option>
+                                    <option value="berlin zoo">Berlin Zoo</option>
+                                    <option value="east side gallery">East Side Gallery</option>
+                                    <option value="berlin wall memorial">Berlin Wall Memorial</option>
+                                    <option value="kottbusser tor">Kottbusser Tor</option>
+                                    <option value="hermannplatz">Hermannplatz</option>
+                                    <option value="warschauer straße">Warschauer Straße</option>
+                                    <option value="frankfurter tor">Frankfurter Tor</option>
+                                    <option value="neukölln">Neukölln</option>
+                                    <option value="spandau">Spandau</option>
+                                    <option value="reinickendorf">Reinickendorf</option>
+                                    <option value="pankow">Pankow</option>
+                                    <option value="lichtenberg">Lichtenberg</option>
+                                    <option value="marzahn">Marzahn</option>
+                                    <option value="hohenschönhausen">Hohenschönhausen</option>
+                                    <option value="treptow">Treptow</option>
+                                    <option value="köpenick">Köpenick</option>
+                                    <option value="steglitz">Steglitz</option>
+                                    <option value="zehlendorf">Zehlendorf</option>
+                                    <option value="tempelhof">Tempelhof</option>
+                                    <option value="tempelhof airport">Tempelhof Airport</option>
+                                </select>
                             </div>
-                            <div class="row mb-3">
-                                <div class="col-md-6">
-                                    <label for="vehicle-type" class="form-label">Vehicle Type</label>
-                                    <select class="form-select" id="vehicle-type">
-                                        <option value="compact">Compact EV</option>
-                                        <option value="sedan">Sedan EV</option>
-                                        <option value="suv">SUV EV</option>
-                                        <option value="truck">Truck EV</option>
-                                    </select>
-                                </div>
-                                <div class="col-md-6">
-                                    <label for="battery-level" class="form-label">Battery Level (%)</label>
-                                    <input type="number" class="form-control" id="battery-level" value="80" min="10"
-                                        max="100">
-                                </div>
-                            </div>
+                            <!-- Vehicle parameters removed for simplicity -->
                             <button type="submit" class="btn btn-primary w-100">
                                 <i class="fas fa-search me-2"></i>Optimize Route
                             </button>
@@ -466,7 +574,7 @@
                             <button id="load-map-data" class="btn btn-outline-primary">
                                 <i class="fas fa-sync me-2"></i>Load Map Data
                             </button>
-                            <button id="show-charging-stations" class="btn btn-outline-success ms-2">
+                            <button id="show-charging-stations" class="btn btn-outline-success ms-2" onclick="console.log('🔌 Inline click detected!'); showChargingStations();">
                                 <i class="fas fa-charging-station me-2"></i>Show Charging Stations
                             </button>
                         </div>
@@ -531,9 +639,23 @@
 
         // Initialize the application
         document.addEventListener('DOMContentLoaded', function () {
+            console.log('🚀 Application initializing...');
             initializeMap();
             checkSystemStatus();
             setupEventListeners();
+
+            // Test button functionality
+            setTimeout(() => {
+                const testButton = document.getElementById('show-charging-stations');
+                if (testButton) {
+                    console.log('🔌 Test: Button found and clickable');
+                    console.log('🔌 Button text:', testButton.textContent);
+                    console.log('🔌 Button classes:', testButton.className);
+                    console.log('🔌 Button disabled:', testButton.disabled);
+                } else {
+                    console.error('❌ Test: Button not found!');
+                }
+            }, 1000);
 
             // Auto-refresh status every 30 seconds
             // setInterval(checkSystemStatus, 30000);
@@ -541,18 +663,22 @@
 
         // Initialize Leaflet map
         function initializeMap() {
-            map = L.map('map').setView([52.5200, 13.4050], 11); // Berlin coordinates
+            // Focus on our small area bounds
+            map = L.map('map').setView([52.5200, 13.4115], 16); // Zoomed in on small area
 
             L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
                 attribution: '© OpenStreetMap contributors'
             }).addTo(map);
 
-            // Add a test marker to verify map is working
-            const testMarker = L.marker([52.5200, 13.4050])
-                .addTo(map)
-                .bindPopup('Test marker - Map is working!');
+            // Add bounds rectangle to show our area
+            const bounds = L.latLngBounds([52.5195, 13.411], [52.5205, 13.412]);
+            L.rectangle(bounds, {
+                color: "#ff7800",
+                weight: 2,
+                fillOpacity: 0.1
+            }).addTo(map).bindPopup('Our Berlin Area');
 
-            console.log('🗺️ Map initialized successfully');
+            console.log('🗺️ Map initialized successfully with focused area');
         }
 
         // Check system status
@@ -599,21 +725,106 @@
 
         // Setup event listeners
         function setupEventListeners() {
+            console.log('🔧 Setting up event listeners...');
+            
             // System initialization
-            document.getElementById('init-system').addEventListener('click', initializeSystem);
+            const initButton = document.getElementById('init-system');
+            if (initButton) {
+                initButton.addEventListener('click', initializeSystem);
+                console.log('✅ Init system button listener added');
+            } else {
+                console.error('❌ Init system button not found');
+            }
 
             // Route optimization form
-            document.getElementById('route-form').addEventListener('submit', optimizeRoute);
+            const routeForm = document.getElementById('route-form');
+            if (routeForm) {
+                routeForm.addEventListener('submit', optimizeRoute);
+                console.log('✅ Route form listener added');
+            } else {
+                console.error('❌ Route form not found');
+            }
 
             // Energy prediction form
-            document.getElementById('energy-form').addEventListener('submit', predictEnergy);
+            const energyForm = document.getElementById('energy-form');
+            if (energyForm) {
+                energyForm.addEventListener('submit', predictEnergy);
+                console.log('✅ Energy form listener added');
+            } else {
+                console.error('❌ Energy form not found');
+            }
 
             // Map controls
-            document.getElementById('load-map-data').addEventListener('click', loadMapData);
-            document.getElementById('show-charging-stations').addEventListener('click', showChargingStations);
+            const loadMapButton = document.getElementById('load-map-data');
+            if (loadMapButton) {
+                loadMapButton.addEventListener('click', loadMapData);
+                console.log('✅ Load map data button listener added');
+            } else {
+                console.error('❌ Load map data button not found');
+            }
+
+            const showChargingButton = document.getElementById('show-charging-stations');
+            if (showChargingButton) {
+                console.log('🔌 Found charging stations button:', showChargingButton);
+                showChargingButton.addEventListener('click', function(e) {
+                    console.log('🔌 Charging stations button clicked!');
+                    e.preventDefault();
+                    showChargingStations();
+                });
+                console.log('✅ Show charging stations button listener added');
+            } else {
+                console.error('❌ Show charging stations button not found');
+            }
 
             // Refresh metrics
-            document.getElementById('refresh-metrics').addEventListener('click', checkSystemStatus);
+            const refreshButton = document.getElementById('refresh-metrics');
+            if (refreshButton) {
+                refreshButton.addEventListener('click', checkSystemStatus);
+                console.log('✅ Refresh metrics button listener added');
+            } else {
+                console.error('❌ Refresh metrics button not found');
+            }
+            
+            // Add validation for origin and destination dropdowns
+            const originSelect = document.getElementById('origin');
+            const destinationSelect = document.getElementById('destination');
+            
+            if (originSelect && destinationSelect) {
+                originSelect.addEventListener('change', validateLocations);
+                destinationSelect.addEventListener('change', validateLocations);
+                console.log('✅ Location validation listeners added');
+            } else {
+                console.error('❌ Location dropdowns not found');
+            }
+            
+            console.log('🔧 Event listeners setup complete');
+        }
+
+        // Validate that origin and destination are different
+        function validateLocations() {
+            const origin = document.getElementById('origin').value;
+            const destination = document.getElementById('destination').value;
+            const submitButton = document.querySelector('#route-form button[type="submit"]');
+            
+            if (origin && destination && origin === destination) {
+                // Show warning and disable submit button
+                submitButton.disabled = true;
+                submitButton.innerHTML = '<i class="fas fa-exclamation-triangle me-2"></i>Select Different Locations';
+                submitButton.className = 'btn btn-warning';
+                
+                // Add visual feedback to dropdowns
+                document.getElementById('origin').classList.add('border-warning');
+                document.getElementById('destination').classList.add('border-warning');
+            } else {
+                // Re-enable submit button
+                submitButton.disabled = false;
+                submitButton.innerHTML = '<i class="fas fa-search me-2"></i>Optimize Route';
+                submitButton.className = 'btn btn-primary';
+                
+                // Remove visual feedback
+                document.getElementById('origin').classList.remove('border-warning');
+                document.getElementById('destination').classList.remove('border-warning');
+            }
         }
 
         // Initialize system
@@ -664,13 +875,22 @@
                 return;
             }
 
+            const origin = document.getElementById('origin').value;
+            const destination = document.getElementById('destination').value;
+
+            if (!origin || !destination) {
+                showAlert('warning', 'Please select both origin and destination');
+                return;
+            }
+
+            if (origin === destination) {
+                showAlert('warning', 'Origin and destination must be different locations');
+                return;
+            }
+
             const data = {
-                origin: document.getElementById('origin').value,
-                destination: document.getElementById('destination').value,
-                vehicle_params: {
-                    type: document.getElementById('vehicle-type').value,
-                    battery_level: parseFloat(document.getElementById('battery-level').value)
-                }
+                origin: origin,
+                destination: destination
             };
 
             console.log('📋 Route optimization data:', data);
@@ -713,7 +933,7 @@
             displayRouteOnMap(route);
         }
 
-        // Display route on map with bright colors, markers, and auto-zoom
+        // Display route on map with continuous path and enhanced highlighting
         function displayRouteOnMap(route) {
             // Clear existing route elements
             if (window.routeLayer) map.removeLayer(window.routeLayer);
@@ -721,16 +941,40 @@
             if (window.destinationMarker) map.removeLayer(window.destinationMarker);
             if (window.routeSegmentLayers) window.routeSegmentLayers.forEach(layer => map.removeLayer(layer));
             window.routeSegmentLayers = [];
+            
+            // Create continuous route coordinates
             const allRouteCoordinates = [];
+            const routePathCoordinates = [];
+            
+            // Build continuous path coordinates
             route.route_segments.forEach((segment, index) => {
                 const segmentCoords = segment.coordinates.map(coord => [coord[0], coord[1]]);
                 allRouteCoordinates.push(...segmentCoords);
+                
+                // Add to continuous path
+                if (index === 0) {
+                    routePathCoordinates.push(...segmentCoords);
+                } else {
+                    // Connect to previous segment smoothly
+                    const prevSegment = route.route_segments[index - 1];
+                    const prevLastCoord = prevSegment.coordinates[prevSegment.coordinates.length - 1];
+                    const currentFirstCoord = segment.coordinates[0];
+                    
+                    // Add intermediate point for smooth connection
+                    const midLat = (prevLastCoord[0] + currentFirstCoord[0]) / 2;
+                    const midLon = (prevLastCoord[1] + currentFirstCoord[1]) / 2;
+                    routePathCoordinates.push([midLat, midLon]);
+                    routePathCoordinates.push(...segmentCoords);
+                }
+                
+                // Create individual segment layer for detailed info
                 const segmentLayer = L.polyline(segmentCoords, {
                     color: getRouteEnergyColor(segment.energy_wh_per_km),
-                    weight: 6,
-                    opacity: 0.9,
-                    dashArray: index % 2 === 0 ? '10, 5' : '5, 10'
+                    weight: 4,
+                    opacity: 0.7,
+                    dashArray: '5, 5'
                 }).addTo(map);
+                
                 // Enhanced popup with detailed segment information
                 const segmentEnergyKwh = (segment.segment_energy_wh || 0) / 1000;
                 const energyEfficiency = segment.energy_wh_per_km < 150 ? '🟢 Excellent' :
@@ -764,6 +1008,51 @@
                 `);
                 window.routeSegmentLayers.push(segmentLayer);
             });
+            
+            // Create main continuous route line (highlighted as main focus)
+            // Use continuous path if available, otherwise use routePathCoordinates
+            const mainRouteCoords = route.continuous_path || routePathCoordinates;
+            window.routeLayer = L.polyline(mainRouteCoords, {
+                color: '#2563eb',  // Bright blue for main route
+                weight: 8,
+                opacity: 0.9,
+                dashArray: '15, 10',
+                lineCap: 'round',
+                lineJoin: 'round'
+            }).addTo(map);
+            
+            // Add pulsing effect to main route
+            window.routeLayer.on('add', function() {
+                const routeElement = this.getElement();
+                if (routeElement) {
+                    routeElement.style.filter = 'drop-shadow(0 0 8px rgba(37, 99, 235, 0.6))';
+                    routeElement.classList.add('route-highlight');
+                }
+            });
+            
+            // Add main route popup
+            window.routeLayer.bindPopup(`
+                <div style="min-width: 300px; font-family: Arial, sans-serif;">
+                    <div style="background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%); color: white; padding: 15px; margin: -10px -10px 10px -10px; border-radius: 5px 5px 0 0;">
+                        <strong>🚗 Optimized EV Route</strong>
+                    </div>
+                    <div style="margin-bottom: 10px;">
+                        <strong>📍 From:</strong> ${route.origin}<br>
+                        <strong>🎯 To:</strong> ${route.destination}<br>
+                        <strong>🛣️ Total Distance:</strong> ${route.total_distance_km} km<br>
+                        <strong>⚡ Total Energy:</strong> ${route.total_energy_kwh} kWh<br>
+                        <strong>⏱️ Est. Time:</strong> ${route.estimated_time_minutes} minutes
+                    </div>
+                    <hr style="margin: 10px 0;">
+                    <div style="margin-bottom: 10px;">
+                        <strong>📊 Route Performance:</strong><br>
+                        • Avg Energy: <strong>${route.avg_energy_per_km} Wh/km</strong><br>
+                        • Efficiency: <strong>${route.avg_energy_per_km < 150 ? '🟢 Excellent' : route.avg_energy_per_km < 200 ? '🟡 Good' : route.avg_energy_per_km < 250 ? '🟠 Moderate' : '🔴 High'}</strong><br>
+                        • Cost: <strong>€${(route.total_energy_kwh * 0.35).toFixed(2)}</strong><br>
+                        • CO2 Saved: <strong>${(route.total_energy_kwh * 0.4).toFixed(2)} kg</strong>
+                    </div>
+                </div>
+            `);
             // Enhanced origin marker with detailed information
             const originCoords = route.route_segments[0].coordinates[0];
             window.originMarker = L.marker([originCoords[0], originCoords[1]], {
@@ -935,49 +1224,91 @@
         async function showChargingStations() {
             try {
                 console.log('🔌 Loading charging stations...');
+                console.log('🗺️ Map object:', map);
+                console.log('📍 Current map center:', map.getCenter());
+                
                 const response = await fetch('/api/data/charging-stations');
+                console.log('📡 Raw response:', response);
+                
+                if (!response.ok) {
+                    throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+                }
+                
                 const data = await response.json();
                 console.log('📡 API Response:', data);
+                
                 if (data.status === 'success') {
                     console.log(`📍 Found ${data.data.length} charging stations`);
+                    
                     // Clear existing charging station elements
                     if (window.chargingStationElements) {
-                        window.chargingStationElements.forEach(element => map.removeLayer(element));
+                        console.log('🗑️ Clearing existing charging stations...');
+                        window.chargingStationElements.forEach(element => {
+                            try {
+                                map.removeLayer(element);
+                            } catch (e) {
+                                console.log('⚠️ Error removing layer:', e);
+                            }
+                        });
                     }
                     window.chargingStationElements = [];
+                    
                     data.data.forEach((station, index) => {
                         console.log(`📍 Adding station ${index + 1}:`, station);
+                        
+                        // Validate coordinates
+                        if (!station.latitude || !station.longitude) {
+                            console.warn(`⚠️ Station ${index} has invalid coordinates:`, station);
+                            return;
+                        }
+                        
                         // Create circle marker instead of regular marker
                         const circleRadius = station.power_kw >= 50 ? 12 : 8;
                         const circleColor = station.is_available ? '#4CAF50' : '#F44336';
                         const borderColor = station.charging_type === 'fast' ? '#FFD700' : '#2196F3';
-                        const chargingCircle = L.circleMarker([station.latitude, station.longitude], {
-                            radius: circleRadius,
-                            fillColor: circleColor,
-                            color: borderColor,
-                            weight: 3,
-                            opacity: 0.8,
-                            fillOpacity: 0.7
-                        }).addTo(map);
-                        chargingCircle.bindPopup(`
-                            <div style="min-width: 250px;">
-                                <strong>🔌 ${station.name}</strong><br>
-                                <hr style="margin: 5px 0;">
-                                ⚡ Power: <strong>${station.power_kw} kW</strong><br>
-                                🔋 Type: <strong>${station.charging_type}</strong><br>
-                                💶 Price: <strong>€${station.price_per_kwh.toFixed(2)}/kWh</strong><br>
-                                🔌 Connectors: <strong>${station.connector_types.join(', ')}</strong><br>
-                                📡 Network: <strong>${station.network}</strong><br>
-                                <hr style="margin: 5px 0;">
-                                Status: <span style="color: ${station.is_available ? '#4CAF50' : '#F44336'}; font-weight: bold;">
-                                    ${station.is_available ? '✅ Available' : '❌ Occupied'}
-                                </span>
-                            </div>
-                        `);
-                        window.chargingStationElements.push(chargingCircle);
+                        
+                        try {
+                            const chargingCircle = L.circleMarker([station.latitude, station.longitude], {
+                                radius: circleRadius,
+                                fillColor: circleColor,
+                                color: borderColor,
+                                weight: 3,
+                                opacity: 0.8,
+                                fillOpacity: 0.7
+                            }).addTo(map);
+                            
+                            chargingCircle.bindPopup(`
+                                <div style="min-width: 250px;">
+                                    <strong>🔌 ${station.name}</strong><br>
+                                    <hr style="margin: 5px 0;">
+                                    ⚡ Power: <strong>${station.power_kw} kW</strong><br>
+                                    🔋 Type: <strong>${station.charging_type}</strong><br>
+                                    💶 Price: <strong>€${station.price_per_kwh.toFixed(2)}/kWh</strong><br>
+                                    🔌 Connectors: <strong>${station.connector_types.join(', ')}</strong><br>
+                                    📡 Network: <strong>${station.network}</strong><br>
+                                    <hr style="margin: 5px 0;">
+                                    Status: <span style="color: ${station.is_available ? '#4CAF50' : '#F44336'}; font-weight: bold;">
+                                        ${station.is_available ? '✅ Available' : '❌ Occupied'}
+                                    </span>
+                                </div>
+                            `);
+                            
+                            window.chargingStationElements.push(chargingCircle);
+                            console.log(`✅ Added station ${index + 1} at [${station.latitude}, ${station.longitude}]`);
+                        } catch (e) {
+                            console.error(`❌ Error adding station ${index}:`, e);
+                        }
                     });
+                    
                     console.log(`✅ Added ${window.chargingStationElements.length} charging stations with enhanced visualization`);
                     showAlert('success', `Loaded ${data.summary.total_stations} charging stations`);
+                    
+                    // Auto-zoom to show all charging stations
+                    if (window.chargingStationElements.length > 0) {
+                        const bounds = L.latLngBounds(window.chargingStationElements.map(circle => circle.getLatLng()));
+                        map.fitBounds(bounds, { padding: [20, 20], maxZoom: 14 });
+                        console.log('🗺️ Auto-zoomed to show all charging stations');
+                    }
                 } else {
                     throw new Error(data.error || 'Failed to load charging stations');
                 }
